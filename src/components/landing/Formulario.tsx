@@ -310,7 +310,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
                     <div className="mt-10 rounded-lg border border-line bg-black/40 p-6 text-left">
                       <p className="eyebrow">Mientras esperás</p>
                       <p className="mt-3 text-xl font-bold">Conocé toda la línea Densell White</p>
-                      <p className="mt-2 text-[15px] text-mute">Kits ambulatorios, de consultorio y complementos. Con tu caso accedés al 20% OFF, y tenés {config.descuentoExtra} mayores a {config.descuentoExtraMinimo}.</p>
+                      <p className="mt-2 text-[15px] text-mute">Kits ambulatorios, de consultorio y complementos. Con tu caso accedés al 20% OFF{config.mostrarDescuentoExtra ? `, y tenés ${config.descuentoExtra} mayores a ${config.descuentoExtraMinimo}` : ""}.</p>
                       <div className="mt-5 grid gap-3 sm:grid-cols-3">
                         {config.productos.slice(0, 3).map((p) => (
                           <WebLink key={p.nombre} lugar="exito-producto" href={p.link} className="group overflow-hidden rounded-md border border-line bg-white text-black transition-colors hover:border-brand">

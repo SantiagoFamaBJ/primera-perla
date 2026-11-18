@@ -13,6 +13,7 @@ export type Faq = { pregunta: string; respuesta: string };
 
 export type Config = {
   programa: string; // nombre del programa (arriba de todo)
+  mostrarDescuentoExtra: boolean; // muestra u oculta el 10% OFF en toda la web
   descuentoExtra: string; // texto del 10% OFF
   descuentoExtraMinimo: string; // "$200.000"
   cupo: number; // interno: no se muestra en la web

@@ -3,6 +3,7 @@ import type { Config } from "./types";
 // Valores iniciales. Todo se puede cambiar desde /ADMIN → Configuración.
 export const DEFAULTS: Config = {
   programa: "Programa Casos Clínicos",
+  mostrarDescuentoExtra: false,
   descuentoExtra: "10% OFF en todas tus compras",
   descuentoExtraMinimo: "$200.000",
   cupo: 40,
@@ -50,7 +51,7 @@ export const DEFAULTS: Config = {
     { pregunta: "¿Hasta cuándo puedo anotarme?", respuesta: "Hasta agotar stock o hasta la fecha de cierre, lo que ocurra primero. Las muestras se asignan por orden de inscripción validada." },
     { pregunta: "¿Cómo y cuándo recibo la jeringa?", respuesta: "Una vez revisada tu inscripción, te escribimos por WhatsApp para coordinar la entrega. Los envíos salen en tandas semanales a partir del 23/11." },
     { pregunta: "¿Qué tengo que enviar como caso clínico?", respuesta: "Una foto inicial y una final de la sonrisa con guía de color, con la misma luz y encuadre; una ficha breve con la concentración, los días de tratamiento y tus observaciones; y la confirmación de que tenés el consentimiento de tu paciente para usar las imágenes." },
-    { pregunta: "¿Cómo uso el 20% OFF?", respuesta: "Cuando recibimos tu caso, te enviamos el beneficio por WhatsApp. Vale durante los 7 días corridos siguientes para compras de productos Densell White. Además, tenés 10% OFF en todas tus compras mayores a $200.000." },
+    { pregunta: "¿Cómo uso el 20% OFF?", respuesta: "Cuando recibimos tu caso, te enviamos el beneficio por WhatsApp. Vale durante los 7 días corridos siguientes para compras de productos Densell White." },
     { pregunta: "¿Van a publicar mi caso?", respuesta: "Sí. Al participar autorizás a Dental Medrano a publicar tu caso con tu nombre y matrícula, como indican las bases y condiciones." },
     { pregunta: "¿Puedo pedir más de una concentración?", respuesta: "No. Hay una jeringa por matrícula, de la concentración que elijas en el formulario." },
     { pregunta: "¿Qué pasa si no envío el caso?", respuesta: "El programa existe para conocer resultados reales. Si no recibimos tu caso dentro de los 60 días de recibida la muestra, no accedés al beneficio del 20% OFF." },

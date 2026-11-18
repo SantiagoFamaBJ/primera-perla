@@ -238,6 +238,9 @@ function Configuracion({ seccion }: { seccion: "general" | "contenido" | "produc
           <div className="grid gap-4 rounded-lg bg-white p-5">
             <F label="Título principal" hint="Las últimas dos palabras van en naranja."><input className={inputCls} value={c.heroTitulo} onChange={(e) => set("heroTitulo", e.target.value)} /></F>
             <F label="Bajada"><textarea className={inputCls} rows={3} value={c.heroBajada} onChange={(e) => set("heroBajada", e.target.value)} /></F>
+            <F label="Mostrar el descuento extra (10% OFF)" hint="Si está apagado, no aparece en ningún lado de la web.">
+              <label className="flex items-center gap-2 py-2"><input type="checkbox" checked={c.mostrarDescuentoExtra} onChange={(e) => set("mostrarDescuentoExtra", e.target.checked)} className="h-5 w-5 accent-[#f15922]" /> Visible en la web</label>
+            </F>
             <F label="Descuento extra"><input className={inputCls} value={c.descuentoExtra} onChange={(e) => set("descuentoExtra", e.target.value)} /></F>
             <F label="Monto mínimo del descuento extra"><input className={inputCls} value={c.descuentoExtraMinimo} onChange={(e) => set("descuentoExtraMinimo", e.target.value)} /></F>
             <F label="Características generales (franja debajo de las tarjetas)" hint="Una por línea. Vacío = no se muestra."><textarea className={inputCls} rows={5} value={c.caracteristicas.join("\n")} onChange={(e) => set("caracteristicas", e.target.value.split("\n").map((s) => s.trim()).filter(Boolean))} /></F>

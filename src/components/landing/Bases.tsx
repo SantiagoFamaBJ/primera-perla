@@ -26,7 +26,7 @@ export default function Bases({ abierto, onClose }: { abierto: boolean; onClose:
     "Participar no requiere compra. La muestra no tiene costo para el profesional.",
     "El profesional se compromete a enviar su caso clínico dentro de los 60 días de recibida la muestra: foto inicial y final con guía de color, ficha breve y declaración de consentimiento del paciente.",
     "Al presentar el caso, el profesional recibe un beneficio del 20% de descuento en productos Densell White, válido durante los 7 días corridos siguientes a la presentación.",
-    `Además, los participantes acceden a ${config.descuentoExtra} mayores a ${config.descuentoExtraMinimo}.`,
+    ...(config.mostrarDescuentoExtra ? [`Además, los participantes acceden a ${config.descuentoExtra} mayores a ${config.descuentoExtraMinimo}.`] : []),
     "El producto es de venta exclusiva a profesionales. El tratamiento es indicado y supervisado por el odontólogo según su criterio clínico.",
     "Al participar, el profesional autoriza a Dental Medrano a publicar su caso con su nombre y matrícula, sin contraprestación adicional.",
     "Los datos personales se tratan según la Ley 25.326, solo para gestionar el programa y, si el profesional lo acepta, para enviarle novedades.",

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { External, Reveal, WebLink, ease, useLanding } from "./shared";
+import { Reveal, ease, useLanding } from "./shared";
 
 export default function Beneficio() {
   const { config } = useLanding();
@@ -40,6 +40,7 @@ export default function Beneficio() {
           </Reveal>
         </div>
 
+        {config.mostrarDescuentoExtra && (
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -48,7 +49,7 @@ export default function Beneficio() {
           className="relative mt-16 overflow-hidden rounded-xl border border-brand/40 bg-black p-7 md:mt-20 md:p-10"
         >
           <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(241,89,34,.35),transparent_70%)]" />
-          <div className="relative grid items-center gap-6 md:grid-cols-[auto_1fr_auto] md:gap-10">
+          <div className="relative grid items-center gap-6 md:grid-cols-[auto_1fr] md:gap-10">
             <p className="text-6xl md:text-7xl font-extrabold leading-none tracking-[-0.05em]">
               10<span className="text-brand">%</span>
               <span className="ml-2 text-2xl md:text-3xl tracking-normal text-mute">OFF</span>
@@ -59,9 +60,9 @@ export default function Beneficio() {
                 {config.descuentoExtra} mayores a <span className="text-brand">{config.descuentoExtraMinimo}</span>.
               </p>
             </div>
-            <WebLink lugar="beneficio-10" className="btn btn-brand whitespace-nowrap">Comprar ahora <External /></WebLink>
           </div>
         </motion.div>
+        )}
       </div>
     </section>
   );
