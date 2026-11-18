@@ -22,7 +22,7 @@ export default function Pasos() {
         <Reveal className="max-w-[720px]">
           <p className="eyebrow">Cómo funciona</p>
           <h2 className="mt-4 text-4xl md:text-6xl font-extrabold tracking-[-0.03em] leading-[1.02]">
-            Cuatro pasos. <span className="text-mute">Un caso real.</span>
+            Cuatro pasos.<br /><span className="text-mute">Un caso real.</span>
           </h2>
           <p className="mt-5 text-lg text-soft">Sin compra. Solo te pedimos que nos muestres tu resultado.</p>
         </Reveal>

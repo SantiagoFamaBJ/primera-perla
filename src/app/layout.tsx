@@ -7,9 +7,9 @@ import "@fontsource/montserrat/800.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Primera Perla · Probá Densell White gratis | Dental Medrano",
+  title: "Probá Densell White gratis | Dental Medrano",
   description:
-    "Programa Primera Perla: jeringas de Densell White sin cargo para odontólogos que quieran probarlo con un paciente y compartir su caso clínico.",
+    "Jeringas de Densell White sin cargo para odontólogos que quieran probarlo con un paciente y compartir su caso clínico.",
   openGraph: {
     title: "Probá Densell White gratis en tu consultorio",
     description: "Pedí tu jeringa de 2 ml sin cargo. Cupo limitado para odontólogos con matrícula vigente.",

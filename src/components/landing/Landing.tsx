@@ -54,9 +54,9 @@ export default function Landing({ config, estadoInicial }: { config: Config; est
           <Pasos />
           <Concentraciones />
           <Resultado />
+          <Casos />
           <Beneficio />
           <Formulario onEstado={setEstado} onSeleccion={setSeleccion} />
-          <Casos />
           <Linea />
           <Faq />
           <CtaFinal />

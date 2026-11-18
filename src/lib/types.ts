@@ -1,9 +1,10 @@
 export type Concentracion = {
   valor: string; // "CP 10%"
   numero: string; // "10"
-  nivel: string; // "Baja"
+  nivel: string; // "Ambulatorio" / "En consultorio"
   descripcion: string;
   codigo: string;
+  detalles: string; // una característica por línea (según la ficha)
 };
 
 export type Producto = { nombre: string; detalle: string; imagen: string; link: string };
@@ -11,7 +12,10 @@ export type Caso = { antes: string; despues: string; profesional: string; detall
 export type Faq = { pregunta: string; respuesta: string };
 
 export type Config = {
-  cupo: number;
+  programa: string; // nombre del programa (arriba de todo)
+  descuentoExtra: string; // texto del 10% OFF
+  descuentoExtraMinimo: string; // "$200.000"
+  cupo: number; // interno: no se muestra en la web
   cierre: string; // ISO con zona horaria
   cerradoManual: boolean;
   pixelId: string;

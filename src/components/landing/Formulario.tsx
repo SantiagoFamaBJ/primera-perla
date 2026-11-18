@@ -108,7 +108,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
       }
       setId(j.id);
       sessionStorage.setItem("pp_form", JSON.stringify({ id: j.id, datos: d }));
-      track("InitiateCheckout", { content_name: "Primera Perla - paso 1" });
+      track("InitiateCheckout", { content_name: "Muestra Densell White - paso 1" });
       setPaso(2);
       subir();
     } catch {
@@ -134,7 +134,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
         return;
       }
       sessionStorage.removeItem("pp_form");
-      track("Lead", { content_name: "Primera Perla", content_category: String(d.concentracion) });
+      track("Lead", { content_name: "Muestra Densell White", content_category: String(d.concentracion) });
       setPaso(3);
       refrescarCupo();
       subir();
@@ -161,7 +161,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
           <p className="text-lg text-soft">Te lleva menos de 2 minutos. Validamos cada inscripción antes del envío.</p>
           <Cupo />
           <ul className="grid gap-2.5 text-[15px] text-soft">
-            <li className="flex gap-3"><span className="text-brand">—</span> Una jeringa por matrícula</li>
+            <li className="flex gap-3"><span className="text-brand">—</span> Una jeringa por matrícula, hasta agotar stock</li>
             <li className="flex gap-3"><span className="text-brand">—</span> Para odontólogos con matrícula vigente en Argentina</li>
             <li className="flex gap-3"><span className="text-brand">—</span> Inscripción hasta el {fechaLarga(config.cierre)}</li>
           </ul>
@@ -171,8 +171,8 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
           {cerrado ? (
             <div className="py-10 text-center">
               <p className="text-3xl font-bold">La inscripción está cerrada.</p>
-              <p className="mt-3 text-mute">Se completaron las jeringas o terminó el plazo. Gracias por tu interés.</p>
-              <WebLink lugar="form-cerrado" className="btn btn-brand mt-8">Conocé Densell White <External /></WebLink>
+              <p className="mt-3 text-mute">Se agotó el stock o terminó el plazo. Gracias por tu interés.</p>
+              <WebLink lugar="form-cerrado" className="btn btn-brand mt-8">Ir a dentalmedrano.com <External /></WebLink>
             </div>
           ) : (
             <>
@@ -197,14 +197,14 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
                   <motion.form key="p1" noValidate onSubmit={enviarPaso1} initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.35 }}>
                     <fieldset>
                       <legend className="mb-3 text-[14px] font-semibold">Concentración que querés probar <span className="text-brand">*</span></legend>
-                      <div className="grid grid-cols-3 gap-2.5" role="radiogroup">
+                      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4" role="radiogroup">
                         {config.concentraciones.map((c, i) => {
                           const on = d.concentracion === c.valor;
                           return (
                             <label key={c.valor} className={`relative cursor-pointer rounded-md border px-2 py-4 text-center transition-colors ${on ? "border-brand bg-brand/10" : "border-line hover:border-white/30"}`}>
                               <input id={`conc-${i}`} type="radio" name="concentracion" value={c.valor} checked={on} onChange={() => set("concentracion")(c.valor)} className="sr-only" />
                               <span className="block text-3xl font-extrabold tracking-tight">{c.numero}<span className="text-brand text-lg">%</span></span>
-                              <span className="mt-1 block text-[11px] font-bold uppercase tracking-[0.18em] text-mute">{c.nivel}</span>
+                              <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.14em] text-mute">{c.nivel}</span>
                               {on && <motion.span layoutId="conc-check" className="absolute right-2 top-2 h-2 w-2 rounded-full bg-brand" />}
                             </label>
                           );
@@ -310,7 +310,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
                     <div className="mt-10 rounded-lg border border-line bg-black/40 p-6 text-left">
                       <p className="eyebrow">Mientras esperás</p>
                       <p className="mt-3 text-xl font-bold">Conocé toda la línea Densell White</p>
-                      <p className="mt-2 text-[15px] text-mute">Kits ambulatorios, de consultorio y complementos. Con tu caso, accedés al 20% OFF.</p>
+                      <p className="mt-2 text-[15px] text-mute">Kits ambulatorios, de consultorio y complementos. Con tu caso accedés al 20% OFF, y tenés {config.descuentoExtra} mayores a {config.descuentoExtraMinimo}.</p>
                       <div className="mt-5 grid gap-3 sm:grid-cols-3">
                         {config.productos.slice(0, 3).map((p) => (
                           <WebLink key={p.nombre} lugar="exito-producto" href={p.link} className="group overflow-hidden rounded-md border border-line bg-white text-black transition-colors hover:border-brand">
@@ -322,7 +322,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
                         ))}
                       </div>
                       <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                        <WebLink lugar="exito" className="btn btn-brand flex-1">Ir a la web de Densell White <External /></WebLink>
+                        <WebLink lugar="exito" className="btn btn-brand flex-1">Ir a dentalmedrano.com <External /></WebLink>
                         <a href={waLink(config.whatsapp, config.whatsappTexto)} target="_blank" rel="noopener" className="btn btn-ghost">
                           <WaIcon className="h-5 w-5" /> Consultar
                         </a>

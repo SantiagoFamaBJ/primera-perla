@@ -21,14 +21,14 @@ export default function CtaFinal() {
         <div className="max-w-[640px]">
           <h2 className="text-4xl md:text-6xl font-extrabold tracking-[-0.03em] leading-[1.02]">
             {estado.abierto ? (
-              <>Quedan {estado.restantes} jeringas.<br />La próxima puede ser tuya.</>
+              <>Probalo con tu próximo paciente.<br /><span className="text-black">Sin costo.</span></>
             ) : (
-              <>Conocé toda la línea Densell White.</>
+              <>Conocé toda la línea Densell White en dentalmedrano.com.</>
             )}
           </h2>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             {estado.abierto && <a href="#formulario" className="btn btn-dark">Pedí tu jeringa gratis <Arrow /></a>}
-            <WebLink lugar="cta-final" className="btn border border-white/70 text-white hover:bg-white hover:text-brand">Ir a la web <External /></WebLink>
+            <WebLink lugar="cta-final" className="btn border border-white/70 text-white hover:bg-white hover:text-brand">Ir a dentalmedrano.com <External /></WebLink>
           </div>
         </div>
       </div>

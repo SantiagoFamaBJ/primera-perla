@@ -23,7 +23,7 @@ function Login({ onOk }: { onOk: () => void }) {
         }}
       >
         <img src="/img/dm-color.png" alt="Dental Medrano" className="mx-auto h-12 w-auto" />
-        <h1 className="mt-6 text-center text-xl font-bold">Primera Perla · Admin</h1>
+        <h1 className="mt-6 text-center text-xl font-bold">Muestras Densell White · Admin</h1>
         <label htmlFor="pw" className="mt-6 block text-sm font-semibold">Contraseña</label>
         <input id="pw" type="password" className={`${inputCls} mt-2`} value={pw} onChange={(e) => setPw(e.target.value)} autoFocus />
         {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
@@ -79,7 +79,7 @@ function Inscripciones() {
   return (
     <div>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <div className="rounded-lg bg-black p-4 text-white"><p className="text-xs font-bold uppercase tracking-widest text-neutral-400">Ocupan cupo</p><p className="mt-1 text-3xl font-extrabold">{ocupan}</p></div>
+        <div className="rounded-lg bg-black p-4 text-white"><p className="text-xs font-bold uppercase tracking-widest text-neutral-400">Confirmadas</p><p className="mt-1 text-3xl font-extrabold">{ocupan}</p></div>
         <div className="rounded-lg bg-white p-4"><p className="text-xs font-bold uppercase tracking-widest text-neutral-500">Pendientes</p><p className="mt-1 text-3xl font-extrabold text-[#f15922]">{conteo.pendiente || 0}</p></div>
         <div className="rounded-lg bg-white p-4"><p className="text-xs font-bold uppercase tracking-widest text-neutral-500">Incompletas</p><p className="mt-1 text-3xl font-extrabold">{conteo.parcial || 0}</p></div>
         <div className="rounded-lg bg-white p-4"><p className="text-xs font-bold uppercase tracking-widest text-neutral-500">Por concentración</p><p className="mt-2 text-sm font-semibold">{Object.entries(porConc).map(([k, v]) => `${k}: ${v}`).join(" · ") || "—"}</p></div>
@@ -217,7 +217,8 @@ function Configuracion({ seccion }: { seccion: "general" | "contenido" | "produc
     <div className="grid gap-6">
       {seccion === "general" && (
         <div className="grid gap-4 rounded-lg bg-white p-5 md:grid-cols-2">
-          <F label="Cupo de jeringas"><input type="number" min={0} className={inputCls} value={c.cupo} onChange={(e) => set("cupo", Number(e.target.value))} /></F>
+          <F label="Nombre del programa" hint="Va arriba de todo, sobre «Densell White»."><input className={inputCls} value={c.programa} onChange={(e) => set("programa", e.target.value)} /></F>
+          <F label="Stock de jeringas" hint="No se muestra en la web. Al llegar a este número, el formulario se cierra solo."><input type="number" min={0} className={inputCls} value={c.cupo} onChange={(e) => set("cupo", Number(e.target.value))} /></F>
           <F label="Cierre de inscripción (hora Argentina)"><input type="datetime-local" className={inputCls} value={cierreLocal} onChange={(e) => set("cierre", `${e.target.value}:59-03:00`)} /></F>
           <F label="Cerrar inscripción ahora" hint="Cierra el formulario aunque quede cupo o tiempo.">
             <label className="flex items-center gap-2 py-2"><input type="checkbox" checked={c.cerradoManual} onChange={(e) => set("cerradoManual", e.target.checked)} className="h-5 w-5 accent-[#f15922]" /> Cerrada</label>
@@ -237,13 +238,15 @@ function Configuracion({ seccion }: { seccion: "general" | "contenido" | "produc
           <div className="grid gap-4 rounded-lg bg-white p-5">
             <F label="Título principal" hint="Las últimas dos palabras van en naranja."><input className={inputCls} value={c.heroTitulo} onChange={(e) => set("heroTitulo", e.target.value)} /></F>
             <F label="Bajada"><textarea className={inputCls} rows={3} value={c.heroBajada} onChange={(e) => set("heroBajada", e.target.value)} /></F>
-            <F label="Características del gel" hint="Una por línea."><textarea className={inputCls} rows={5} value={c.caracteristicas.join("\n")} onChange={(e) => set("caracteristicas", e.target.value.split("\n").map((s) => s.trim()).filter(Boolean))} /></F>
+            <F label="Descuento extra"><input className={inputCls} value={c.descuentoExtra} onChange={(e) => set("descuentoExtra", e.target.value)} /></F>
+            <F label="Monto mínimo del descuento extra"><input className={inputCls} value={c.descuentoExtraMinimo} onChange={(e) => set("descuentoExtraMinimo", e.target.value)} /></F>
+            <F label="Características generales (franja debajo de las tarjetas)" hint="Una por línea. Vacío = no se muestra."><textarea className={inputCls} rows={5} value={c.caracteristicas.join("\n")} onChange={(e) => set("caracteristicas", e.target.value.split("\n").map((s) => s.trim()).filter(Boolean))} /></F>
           </div>
           <h3 className="font-bold">Concentraciones</h3>
           <Lista
             items={c.concentraciones}
-            vacio={{ valor: "", numero: "", nivel: "", descripcion: "", codigo: "" }}
-            campos={[{ k: "valor", label: "Valor (ej: CP 10%)" }, { k: "numero", label: "Número" }, { k: "nivel", label: "Nivel" }, { k: "codigo", label: "Código" }, { k: "descripcion", label: "Descripción" }]}
+            vacio={{ valor: "", numero: "", nivel: "", descripcion: "", codigo: "", detalles: "" }}
+            campos={[{ k: "valor", label: "Valor (ej: CP 10%)" }, { k: "numero", label: "Número" }, { k: "nivel", label: "Uso (ej: Ambulatorio)" }, { k: "codigo", label: "Código" }, { k: "descripcion", label: "Descripción" }, { k: "detalles", label: "Características (una por línea)", tipo: "textarea" }]}
             onChange={(v) => set("concentraciones", v)}
           />
         </div>
@@ -305,7 +308,7 @@ export default function Admin() {
         <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-4 px-5 py-4">
           <div className="flex items-center gap-4">
             <img src="/img/dm-color.png" alt="Dental Medrano" className="h-9 w-auto" />
-            <span className="hidden text-sm font-bold text-neutral-500 sm:inline">Primera Perla · Admin</span>
+            <span className="hidden text-sm font-bold text-neutral-500 sm:inline">Muestras Densell White · Admin</span>
           </div>
           <div className="flex items-center gap-3">
             <a href="/" target="_blank" className="text-sm font-semibold underline">Ver web</a>

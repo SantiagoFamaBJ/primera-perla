@@ -7,7 +7,7 @@ import { PASO1, PASO2, normMatricula, normWhatsapp, validar } from "@/lib/valida
 export const dynamic = "force-dynamic";
 
 const txt = (v: unknown, max = 200) => (typeof v === "string" ? v.trim().slice(0, max) : "");
-const MSG_CERRADO = "La inscripción está cerrada: se completó el cupo o terminó el plazo.";
+const MSG_CERRADO = "La inscripción está cerrada: se agotó el stock o terminó el plazo.";
 
 // Paso 1: datos clave. Se guarda como "incompleta" (no ocupa cupo todavía).
 export async function POST(req: Request) {
@@ -89,7 +89,7 @@ export async function PATCH(req: Request) {
 
   const { data, error } = await db().rpc("pp_confirmar", { p_id: id, p_datos: datos, p_cupo: config.cupo });
   if (error) return NextResponse.json({ ok: false, error: "No pudimos confirmar tu inscripción. Probá de nuevo." }, { status: 500 });
-  if (data === "cupo") return NextResponse.json({ ok: false, error: "Se completaron las jeringas disponibles. Gracias por tu interés.", cerrado: true }, { status: 409 });
+  if (data === "cupo") return NextResponse.json({ ok: false, error: "Se agotó el stock disponible para el programa. Gracias por tu interés.", cerrado: true }, { status: 409 });
   if (data === "duplicada") return NextResponse.json({ ok: false, error: "Esta matrícula ya está inscripta." }, { status: 409 });
   if (data !== "ok") return NextResponse.json({ ok: false, error: "No encontramos tu inscripción. Volvé a empezar." }, { status: 404 });
   return NextResponse.json({ ok: true });

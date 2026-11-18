@@ -40,7 +40,7 @@ export default function Flotantes() {
             className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-black/90 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 backdrop-blur md:hidden"
           >
             <a href="#formulario" className="btn btn-brand w-full">
-              Pedí tu jeringa gratis · quedan {estado.restantes} <Arrow />
+              Pedí tu jeringa gratis <Arrow />
             </a>
           </motion.div>
         )}

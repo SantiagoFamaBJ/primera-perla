@@ -52,7 +52,7 @@ function Visual() {
     return () => window.removeEventListener("pointermove", f);
   }, [mx, my]);
 
-  const anillo = "DENSELL WHITE · PRIMERA PERLA · CP 10 · 16 · 22 · MUESTRA PROFESIONAL · ";
+  const anillo = "DENSELL WHITE · CP 10 · 16 · 22 · 35 · MUESTRA PROFESIONAL · ";
 
   return (
     <div ref={ref} className="relative mx-auto aspect-square w-full max-w-[560px]" style={{ perspective: 1000 }} aria-hidden="true">
@@ -114,15 +114,15 @@ function Visual() {
         initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.6, duration: 0.8, ease }}
         className="absolute right-0 top-[16%] rounded-md border border-white/15 bg-black/60 px-3.5 py-2 backdrop-blur"
       >
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-mute">Jeringa</p>
-        <p className="text-sm font-bold">2 ml · Sin cargo</p>
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-mute">Gel blanqueador</p>
+        <p className="text-sm font-bold">Densell White</p>
       </motion.div>
       <motion.div
         initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.8, duration: 0.8, ease }}
         className="absolute bottom-[14%] left-0 rounded-md border border-white/15 bg-black/60 px-3.5 py-2 backdrop-blur"
       >
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-mute">Peróxido de carbamida</p>
-        <p className="text-sm font-bold">10 · 16 · 22%</p>
+        <p className="text-sm font-bold">10 · 16 · 22 · 35%</p>
       </motion.div>
     </div>
   );
@@ -135,9 +135,10 @@ export default function Hero() {
       <div className="grid-bg absolute inset-0 -z-10" />
       <div className="mx-auto grid max-w-[1200px] items-center gap-8 px-5 md:px-8 lg:grid-cols-[1.05fr_.95fr] lg:gap-6">
         <div className="flex flex-col gap-6 md:gap-7">
-          <motion.p className="eyebrow" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
-            Programa Primera Perla · Densell White
-          </motion.p>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="flex flex-col gap-1.5 border-l-2 border-brand pl-4">
+            <p className="eyebrow">{config.programa}</p>
+            <p className="text-lg font-bold tracking-[0.04em] text-white">Densell White</p>
+          </motion.div>
           <Titulo texto={config.heroTitulo} />
           <motion.p
             className="max-w-[34em] text-[17px] md:text-lg leading-relaxed text-soft"
@@ -147,9 +148,9 @@ export default function Hero() {
           </motion.p>
           <motion.div className="flex flex-col sm:flex-row gap-3" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease, delay: 0.9 }}>
             {estado.abierto ? (
-              <a href="#formulario" className="btn btn-brand">Pedí tu jeringa gratis <Arrow /></a>
+              <a href="#formulario" className="btn btn-brand whitespace-nowrap">Pedí tu jeringa gratis <Arrow /></a>
             ) : null}
-            <WebLink lugar="hero" className="btn btn-ghost">Conocé la línea completa <External /></WebLink>
+            <WebLink lugar="hero" className="btn btn-ghost whitespace-nowrap">Ir a dentalmedrano.com <External /></WebLink>
           </motion.div>
           <motion.div className="max-w-[460px]" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease, delay: 1.05 }}>
             <Cupo />

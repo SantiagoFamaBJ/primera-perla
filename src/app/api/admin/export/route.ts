@@ -34,7 +34,7 @@ export async function GET() {
   return new Response("﻿" + lines.join("\r\n"), {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="primera-perla-inscripciones.csv"`,
+      "Content-Disposition": `attachment; filename="inscripciones-muestras-densell-white.csv"`,
     },
   });
 }

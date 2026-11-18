@@ -1,6 +1,6 @@
 "use client";
 
-const ITEMS = ["Sin compra", "Envío sin cargo", "Jeringa de 2 ml", "Elegís la concentración", "20% OFF al compartir tu caso", "Una por matrícula", "Cupo limitado"];
+const ITEMS = ["Sin compra", "Envío sin cargo", "Elegís la concentración", "20% OFF al compartir tu caso", "10% OFF en compras +$200.000", "Una por matrícula", "Hasta agotar stock"];
 
 export default function Marquee() {
   const fila = [...ITEMS, ...ITEMS];
