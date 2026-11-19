@@ -41,7 +41,8 @@ export default function Resultado() {
               </li>
             ))}
           </ul>
-          <div className="mt-7 grid gap-3 sm:grid-cols-2">
+          <p className="mt-4 text-[14px] leading-relaxed text-soft">El caso se envía en forma privada. Alcanza con fotos de la sonrisa: no hace falta el nombre ni otros datos que identifiquen al paciente.</p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <div className="rounded-lg border border-line bg-surface p-4">
               <p className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-ink">Requisito</p>
               <p className="mt-1.5 text-[14px] leading-relaxed text-soft">Presentar el caso para cumplir con el programa y acceder al 20% OFF.</p>

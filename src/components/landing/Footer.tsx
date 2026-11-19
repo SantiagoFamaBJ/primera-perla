@@ -14,13 +14,13 @@ export default function Footer() {
           <div className="grid gap-1.5 text-[15px] text-white/80">
             <p className="mb-1 text-xs font-bold uppercase tracking-[0.22em] text-white">Professional Center</p>
             <p>Marcelo T. de Alvear 2063, CABA</p>
-            <a href="https://www.google.com/maps/search/?api=1&query=Marcelo+T.+de+Alvear+2063+CABA" target="_blank" rel="noopener" className="underline-offset-2 hover:text-white hover:underline">Cómo llegar</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=Marcelo+T.+de+Alvear+2063+CABA" target="_blank" rel="noopener" className="py-1 underline-offset-2 hover:text-white hover:underline">Cómo llegar</a>
           </div>
           <div className="grid gap-1.5 text-[15px] text-white/80">
             <p className="mb-1 text-xs font-bold uppercase tracking-[0.22em] text-white">Contacto</p>
-            <a href="tel:+5491164362400" className="hover:text-white">11 6436-2400</a>
-            <a href={waLink(config.whatsapp, config.whatsappTexto)} target="_blank" rel="noopener" className="hover:text-white">WhatsApp</a>
-            <WebLink lugar="footer" className="hover:text-white">dentalmedrano.com</WebLink>
+            <a href="tel:+5491164362400" className="py-1 hover:text-white">11 6436-2400</a>
+            <a href={waLink(config.whatsapp, config.whatsappTexto)} target="_blank" rel="noopener" className="py-1 hover:text-white">WhatsApp</a>
+            <WebLink lugar="footer" className="py-1 hover:text-white">dentalmedrano.com</WebLink>
           </div>
         </div>
 

@@ -2,7 +2,7 @@
 
 import { useLanding } from "./shared";
 
-const ITEMS = ["Muestra sin cargo", "Envío gratis", "CP 10 · 16 · 22 · 35%", "Para odontólogos matriculados", "20% OFF al presentar tu caso", "Una muestra por matrícula", "Hasta agotar stock"];
+const ITEMS = ["Muestra sin cargo", "Envío sin cargo", "CP 10 · 16 · 22 · 35%", "Para odontólogos matriculados", "20% OFF al presentar tu caso", "Una muestra por matrícula", "Hasta agotar stock"];
 
 export default function Marquee() {
   const { config } = useLanding();

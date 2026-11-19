@@ -10,10 +10,15 @@ export default function Flotantes() {
 
   // CTA fijo en mobile: aparece cuando el CTA del hero salió de pantalla y se oculta cuando el formulario está visible.
   useEffect(() => {
-    // Se oculta donde ya hay un CTA grande a la vista (formulario y cierre)
+    // Se oculta donde ya hay un CTA grande a la vista (hero, formulario y cierre)
     const zonas = [...document.querySelectorAll("#formulario, [data-oculta-cta]")];
     const visibles = new Set<Element>();
-    const calc = () => setMostrarCta(window.scrollY > 520 && visibles.size === 0);
+    const calc = () => {
+      const v = window.scrollY > 200 && visibles.size === 0;
+      setMostrarCta(v);
+      // Reserva espacio abajo para que la barra no tape contenido (solo en celular)
+      document.body.style.paddingBottom = v && window.innerWidth < 768 ? "76px" : "";
+    };
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => (e.isIntersecting ? visibles.add(e.target) : visibles.delete(e.target)));
       calc();
@@ -21,7 +26,7 @@ export default function Flotantes() {
     zonas.forEach((z) => io.observe(z));
     window.addEventListener("scroll", calc, { passive: true });
     calc();
-    return () => { window.removeEventListener("scroll", calc); io.disconnect(); };
+    return () => { window.removeEventListener("scroll", calc); io.disconnect(); document.body.style.paddingBottom = ""; };
   }, []);
 
   const visible = mostrarCta && estado.abierto;

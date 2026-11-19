@@ -58,8 +58,8 @@ function Visual() {
       <motion.div style={{ rotateX: rx, rotateY: ry }} className="absolute inset-[5%]">
         <motion.div
           className="relative h-full w-full"
-          initial={{ opacity: 0, rotate: -30, scale: 0.8 }}
-          animate={{ opacity: 1, rotate: 0, scale: 1 }}
+          initial={{ rotate: -20, scale: 0.92 }}
+          animate={{ rotate: 0, scale: 1 }}
           transition={{ duration: 1.1, ease, delay: 0.2 }}
         >
           <motion.div className="relative h-full w-full" animate={{ y: [0, -12, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1.4 }}>
@@ -80,23 +80,45 @@ function Visual() {
   );
 }
 
+function VisualMovil() {
+  // Versión liviana para celular: se ve apenas carga, sin esperar animaciones
+  return (
+    <div className="relative mx-auto h-[176px] w-full max-w-[360px] lg:hidden" aria-hidden="true">
+      <div className="absolute left-1/2 top-1/2 h-[176px] w-[176px] -translate-x-1/2 -translate-y-1/2 rounded-full border-[1.5px] border-brand/70" />
+      <div className="absolute left-1/2 top-1/2 h-[138px] w-[138px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-black/15" />
+      <div className="absolute left-1/2 top-1/2 h-[150px] w-[150px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(241,89,34,.22),transparent_70%)] blur-xl" />
+      <img
+        src="/img/jeringa.webp"
+        alt=""
+        width={633}
+        height={627}
+        fetchPriority="high"
+        className="absolute left-1/2 top-1/2 h-[210px] w-[210px] -translate-x-1/2 -translate-y-1/2 -rotate-[22deg] object-contain drop-shadow-[0_18px_20px_rgba(0,0,0,.25)]"
+      />
+      <span className="absolute bottom-1 right-2 rounded-md border border-black/10 bg-white/95 px-2 py-1 text-[11px] font-bold shadow-sm">CP 10 · 16 · 22 · 35%</span>
+    </div>
+  );
+}
+
 export default function Hero() {
   const { config, estado } = useLanding();
   const tit = config.heroTitulo.trim().split(" ");
   const corte = Math.max(0, tit.length - 2);
+  const bajada = <p className="max-w-[34em] whitespace-pre-line text-[16px] md:text-lg leading-relaxed text-soft">{config.heroBajada}</p>;
   return (
-    <section id="inicio" className="relative isolate overflow-hidden pt-24 md:pt-28 pb-14 md:pb-20">
+    <section id="inicio" data-oculta-cta className="relative isolate overflow-hidden pt-[84px] md:pt-28 pb-12 md:pb-20">
       <div className="grid-bg absolute inset-0 -z-10" />
       <div className="mx-auto grid max-w-[1200px] items-center gap-6 px-5 md:px-8 lg:grid-cols-[1.05fr_.95fr] lg:gap-6">
-        <div className="flex flex-col gap-5 md:gap-6">
-          <div className="flex flex-col gap-1 border-l-2 border-brand pl-4">
+        <div className="flex flex-col gap-4 md:gap-6">
+          <div className="flex flex-col gap-1 border-l-2 border-brand pl-3 md:pl-4">
             <p className="eyebrow">{config.programa}</p>
-            <p className="text-base md:text-lg font-bold tracking-[0.04em]">Densell White</p>
+            <p className="text-[15px] md:text-lg font-bold tracking-[0.04em]">Densell White</p>
           </div>
-          <h1 className="text-[38px] leading-[1.04] sm:text-6xl lg:text-[72px] font-extrabold tracking-[-0.03em]">
+          <h1 className="text-[34px] leading-[1.05] sm:text-6xl lg:text-[72px] font-extrabold tracking-[-0.03em]">
             {tit.slice(0, corte).join(" ")} <span className="text-brand">{tit.slice(corte).join(" ")}</span>
           </h1>
-          <p className="max-w-[34em] text-[16px] md:text-lg leading-relaxed text-soft">{config.heroBajada}</p>
+          <VisualMovil />
+          <div className="hidden lg:block">{bajada}</div>
 
           <ul className="flex flex-wrap gap-2" aria-label="Condiciones">
             {["Envío sin cargo", "Elegí 10, 16, 22 o 35%", "Sin compra obligatoria"].map((t) => (
@@ -106,7 +128,7 @@ export default function Hero() {
             ))}
           </ul>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2.5">
             {estado.abierto ? (
               <CtaForm lugar="hero" className="btn btn-brand w-full sm:w-auto sm:self-start !min-h-[56px] !text-base">
                 Pedí tu muestra gratis <Arrow />
@@ -114,12 +136,14 @@ export default function Hero() {
             ) : (
               <p className="rounded-md border border-line bg-surface px-4 py-3 font-semibold">La inscripción está cerrada. Gracias por tu interés.</p>
             )}
-            <p className="text-[13px] font-semibold text-mute">
-              Exclusivo para odontólogos matriculados de Argentina · Hasta el {fechaCorta(config.cierre)} o hasta agotar stock
+            <p className="flex items-start gap-1.5 text-[13px] font-semibold text-ink">
+              <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand" />
+              <span>Exclusivo para odontólogos matriculados de Argentina <span className="font-medium text-mute">· Hasta el {fechaCorta(config.cierre)} o hasta agotar stock</span></span>
             </p>
           </div>
+          <div className="lg:hidden">{bajada}</div>
         </div>
-        <div className="mx-auto w-full sm:w-[72%] lg:w-full">
+        <div className="mx-auto hidden w-full sm:w-[72%] lg:block lg:w-full">
           <Visual />
         </div>
       </div>

@@ -26,8 +26,8 @@ export default function Pasos() {
             <motion.li
               key={p.n}
               className={`relative rounded-lg border p-6 ${i === 3 ? "border-brand bg-brand-50" : "border-line bg-white"}`}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ y: 16 }}
+              whileInView={{ y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.55, ease, delay: i * 0.08 }}
             >

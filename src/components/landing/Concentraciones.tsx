@@ -1,7 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Arrow, Check, Reveal, ease, track, useLanding } from "./shared";
+import { Arrow, Check, Reveal, track, useLanding } from "./shared";
 
 export default function Concentraciones() {
   const { config, estado, elegir, seleccion } = useLanding();
@@ -19,16 +18,12 @@ export default function Concentraciones() {
         </Reveal>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 md:mt-12">
-          {config.concentraciones.map((c, i) => {
+          {config.concentraciones.map((c) => {
             const activa = seleccion === c.valor;
             const detalles = (c.detalles || "").split("\n").map((l) => l.trim()).filter(Boolean);
             return (
-              <motion.div
+              <div
                 key={c.valor}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.55, ease, delay: i * 0.07 }}
                 className={`flex flex-col rounded-lg border bg-white p-6 transition-colors ${activa ? "border-brand ring-2 ring-brand/20" : "border-line"}`}
               >
                 <p className="inline-flex self-start rounded-full bg-surface px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-soft">{c.nivel}</p>
@@ -64,7 +59,7 @@ export default function Concentraciones() {
                     </button>
                   </div>
                 )}
-              </motion.div>
+              </div>
             );
           })}
         </div>

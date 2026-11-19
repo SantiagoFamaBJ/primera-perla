@@ -234,6 +234,7 @@ function Configuracion({ seccion }: { seccion: "general" | "contenido" | "produc
           <F label="ID de Google Analytics 4" hint="Formato G-XXXXXXX. Vacío = sin GA4."><input className={inputCls} value={c.gaId} onChange={(e) => set("gaId", e.target.value)} placeholder="G-XXXXXXXXXX" /></F>
           <F label="Web a la que llevan los botones"><input className={inputCls} value={c.webUrl} onChange={(e) => set("webUrl", e.target.value)} /></F>
           <F label="Texto del link a la web (header)"><input className={inputCls} value={c.webLabel} onChange={(e) => set("webLabel", e.target.value)} /></F>
+          <F label="Plazo de envío (opcional)" hint="Solo si está confirmado. Ej: Los envíos salen en tandas semanales. Vacío = no se muestra."><input className={inputCls} value={c.plazoEnvio} onChange={(e) => set("plazoEnvio", e.target.value)} /></F>
           <F label="WhatsApp (solo números)"><input className={inputCls} value={c.whatsapp} onChange={(e) => set("whatsapp", e.target.value)} /></F>
           <F label="Mensaje inicial de WhatsApp"><input className={inputCls} value={c.whatsappTexto} onChange={(e) => set("whatsappTexto", e.target.value)} /></F>
           <F label="Razón social (bases)"><input className={inputCls} value={c.razonSocial} onChange={(e) => set("razonSocial", e.target.value)} /></F>

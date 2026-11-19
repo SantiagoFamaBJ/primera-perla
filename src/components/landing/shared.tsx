@@ -43,8 +43,9 @@ export const ease = [0.2, 0.7, 0.1, 1] as const;
 export function Reveal({ delay = 0, y = 24, ...props }: HTMLMotionProps<"div"> & { delay?: number; y?: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
+      // Sin opacidad inicial: el contenido se ve aunque el JS tarde o las animaciones estén desactivadas
+      initial={{ y }}
+      whileInView={{ y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.6, ease, delay }}
       {...props}
@@ -103,7 +104,8 @@ export function CtaForm({ className, children, lugar }: { className?: string; ch
       className={className}
       onClick={(e) => {
         e.preventDefault();
-        document.getElementById("formulario")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        const destino = window.innerWidth < 1024 ? document.getElementById("form-card") : document.getElementById("formulario");
+        (destino || document.getElementById("formulario"))?.scrollIntoView({ behavior: "smooth", block: "start" });
         track("ClickCTA", { lugar }, { custom: true, ga: "cta_click" });
       }}
     >

@@ -24,6 +24,7 @@ export type Config = {
   gaId: string; // Google Analytics 4 (G-XXXX), opcional
   webUrl: string;
   webLabel: string;
+  plazoEnvio: string; // texto opcional sobre tiempos de envío (vacío = no se muestra)
   whatsapp: string; // solo números, ej 5491164362400
   whatsappTexto: string;
   heroTitulo: string;

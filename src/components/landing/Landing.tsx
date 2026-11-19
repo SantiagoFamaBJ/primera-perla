@@ -39,7 +39,7 @@ export default function Landing({ config, estadoInicial }: { config: Config; est
 
   const elegir = useCallback((valor: string) => {
     setSeleccion(valor);
-    document.getElementById("formulario")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    (document.getElementById("form-card") || document.getElementById("formulario"))?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
   return (
@@ -52,10 +52,10 @@ export default function Landing({ config, estadoInicial }: { config: Config; est
           <Marquee />
           <Pasos />
           <Concentraciones />
+          <Formulario onEstado={setEstado} onSeleccion={setSeleccion} />
           <Resultado />
           <Casos />
           <Beneficio />
-          <Formulario onEstado={setEstado} onSeleccion={setSeleccion} />
           <Faq />
           <CtaFinal />
         </main>

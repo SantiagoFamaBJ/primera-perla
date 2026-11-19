@@ -13,6 +13,7 @@ export const DEFAULTS: Config = {
   gaId: "",
   webUrl: "https://dentalmedrano.com",
   webLabel: "dentalmedrano.com",
+  plazoEnvio: "",
   whatsapp: "5491164362400",
   whatsappTexto: "¡Hola! Vi el programa de muestras de Densell White y quiero hacer una consulta.",
   heroTitulo: "Probá Densell White gratis en tu consultorio.",

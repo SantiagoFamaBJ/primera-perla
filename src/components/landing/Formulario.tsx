@@ -37,6 +37,27 @@ function Select({ id, value, onChange, opciones, placeholder, invalid }: { id: s
   );
 }
 
+// Opciones de un toque (menos interacciones que un desplegable en el celular)
+function Chips({ id, label, value, onChange, opciones, error }: { id: string; label: string; value: string; onChange: (v: string) => void; opciones: string[]; error?: string }) {
+  return (
+    <fieldset className="sm:col-span-2" aria-describedby={error ? `${id}-err` : undefined}>
+      <legend className="mb-2 text-[14px] font-bold">{label} <span className="text-brand">*</span></legend>
+      <div className="flex flex-wrap gap-2" role="radiogroup">
+        {opciones.map((o, i) => {
+          const on = value === o;
+          return (
+            <label key={o} className={`inline-flex min-h-[44px] cursor-pointer items-center rounded-full border px-4 text-[14px] font-semibold transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand ${on ? "border-brand bg-brand text-white" : error ? "border-danger bg-white text-ink" : "border-[#cfccc6] bg-white text-ink hover:border-ink"}`}>
+              <input id={i === 0 ? id : undefined} type="radio" name={id} value={o} checked={on} onChange={() => onChange(o)} className="sr-only" />
+              {o}
+            </label>
+          );
+        })}
+      </div>
+      {error && <p id={`${id}-err`} className="mt-1.5 text-[13px] font-semibold text-danger">{error}</p>}
+    </fieldset>
+  );
+}
+
 function Casilla({ id, checked, onChange, error, children }: { id: string; checked: boolean; onChange: (v: boolean) => void; error?: string; children: React.ReactNode }) {
   return (
     <div>
@@ -189,7 +210,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
   return (
     <section ref={sectionRef} id="formulario" className="bg-surface py-20 md:py-28">
       <div className="mx-auto grid max-w-[1200px] items-start gap-10 px-5 md:px-8 lg:grid-cols-[.8fr_1.2fr] lg:gap-14">
-        <aside className="flex flex-col gap-5 lg:sticky lg:top-28">
+        <aside className="order-last flex flex-col gap-5 lg:order-none lg:sticky lg:top-28">
           <p className="eyebrow">Solicitud</p>
           <h2 className="text-4xl md:text-6xl font-extrabold tracking-[-0.03em] leading-[1.02]">
             Pedí tu <span className="text-brand">muestra gratis.</span>
@@ -199,7 +220,8 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
             {[
               "Para odontólogos con matrícula vigente en Argentina",
               "Una muestra por matrícula, sujeta a validación",
-              "Envío sin cargo",
+              config.plazoEnvio ? `Envío sin cargo · ${config.plazoEnvio}` : "Envío sin cargo",
+              "Requiere presentar tu caso clínico dentro de los 60 días",
               `Hasta el ${fechaLarga(config.cierre)} o hasta agotar stock`,
             ].map((t) => (
               <li key={t} className="flex gap-3"><CheckIcon className="mt-1 h-4 w-4 shrink-0 text-brand" /> {t}</li>
@@ -211,7 +233,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
           </div>
         </aside>
 
-        <div ref={cardRef} className="scroll-mt-24 rounded-xl border border-line bg-white p-5 shadow-[0_20px_60px_-30px_rgba(0,0,0,.25)] sm:p-8 md:p-10">
+        <div ref={cardRef} id="form-card" className="scroll-mt-20 rounded-xl border border-line bg-white p-5 shadow-[0_20px_60px_-30px_rgba(0,0,0,.25)] sm:p-8 md:p-10">
           {cerrado ? (
             <div className="py-10 text-center">
               <p className="text-3xl font-bold">La inscripción está cerrada.</p>
@@ -221,6 +243,9 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
           ) : (
             <>
               {paso !== 3 && (
+                <h2 className="mb-4 text-[28px] font-extrabold leading-tight tracking-[-0.02em] lg:hidden">Pedí tu <span className="text-brand">muestra gratis.</span></h2>
+              )}
+              {paso !== 3 && (
                 <div className="mb-7" aria-label={`Paso ${paso} de 2`}>
                   <div className="flex items-center justify-between text-[13px] font-bold">
                     <span className={paso === 1 ? "text-ink" : "text-mute"}>1. Datos profesionales</span>
@@ -229,6 +254,16 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
                   <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-2">
                     <motion.div className="h-full bg-brand" animate={{ width: paso === 1 ? "50%" : "100%" }} transition={{ duration: 0.5, ease }} />
                   </div>
+                </div>
+              )}
+
+              {paso !== 3 && (
+                <div className="mb-6 flex gap-3 rounded-lg border border-brand/30 bg-brand-50 p-4">
+                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand text-[13px] font-extrabold text-white">!</span>
+                  <p className="text-[14px] leading-relaxed text-ink">
+                    <strong>La muestra forma parte de un programa de casos clínicos.</strong> Al recibirla, te comprometés a presentar tu caso en forma privada dentro de los 60 días. Publicarlo es opcional.{" "}
+                    <button type="button" onClick={abrirBases} className="font-bold text-brand underline underline-offset-2">Ver bases</button>
+                  </p>
                 </div>
               )}
 
@@ -287,6 +322,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
                   <motion.form key="p2" noValidate onSubmit={enviarPaso2} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.25 }}>
                     <p className="mb-5 text-[15px] text-soft">
                       {nombre ? `${nombre}, ` : ""}¿a dónde te enviamos tu muestra de <strong className="text-ink">Densell White {String(d.concentracion)}</strong>?
+                      <span className="mt-1 block text-[13px] text-mute">Envío sin cargo.{config.plazoEnvio ? ` ${config.plazoEnvio}` : ""}</span>
                     </p>
                     <div className="grid gap-5 sm:grid-cols-2">
                       <Campo id="domicilio" label="Domicilio de entrega" error={err.domicilio} hint="Calle, número y, si corresponde, piso o consultorio." full>
@@ -303,20 +339,12 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
                       </Campo>
                     </div>
 
-                    <p className="mb-4 mt-7 border-t border-line pt-6 text-[13px] font-extrabold uppercase tracking-[0.14em] text-mute">Sobre tu práctica</p>
+                    <p className="mb-4 mt-7 border-t border-line pt-6 text-[13px] font-extrabold uppercase tracking-[0.14em] text-mute">Sobre tu práctica · un toque por pregunta</p>
                     <div className="grid gap-5 sm:grid-cols-2">
-                      <Campo id="tipo_matricula" label="Tipo de matrícula" error={err.tipo_matricula}>
-                        <Select id="tipo_matricula" value={String(d.tipo_matricula)} onChange={set("tipo_matricula")} opciones={TIPOS_MATRICULA} placeholder="Elegí una opción" invalid={Boolean(err.tipo_matricula)} />
-                      </Campo>
-                      <Campo id="especialidad" label="Especialidad" error={err.especialidad}>
-                        <Select id="especialidad" value={String(d.especialidad)} onChange={set("especialidad")} opciones={ESPECIALIDADES} placeholder="Elegí una opción" invalid={Boolean(err.especialidad)} />
-                      </Campo>
-                      <Campo id="marca_actual" label="¿Qué blanqueamiento ambulatorio usás hoy?" error={err.marca_actual} full>
-                        <Select id="marca_actual" value={String(d.marca_actual)} onChange={set("marca_actual")} opciones={MARCAS} placeholder="Elegí una opción" invalid={Boolean(err.marca_actual)} />
-                      </Campo>
-                      <Campo id="blanqueamientos_mes" label="¿Cuántos blanqueamientos ambulatorios hacés por mes?" error={err.blanqueamientos_mes} full>
-                        <Select id="blanqueamientos_mes" value={String(d.blanqueamientos_mes)} onChange={set("blanqueamientos_mes")} opciones={VOLUMENES} placeholder="Elegí una opción" invalid={Boolean(err.blanqueamientos_mes)} />
-                      </Campo>
+                      <Chips id="tipo_matricula" label="Tipo de matrícula" value={String(d.tipo_matricula)} onChange={set("tipo_matricula")} opciones={TIPOS_MATRICULA} error={err.tipo_matricula} />
+                      <Chips id="especialidad" label="Especialidad" value={String(d.especialidad)} onChange={set("especialidad")} opciones={ESPECIALIDADES} error={err.especialidad} />
+                      <Chips id="marca_actual" label="¿Qué blanqueamiento ambulatorio usás hoy?" value={String(d.marca_actual)} onChange={set("marca_actual")} opciones={MARCAS} error={err.marca_actual} />
+                      <Chips id="blanqueamientos_mes" label="¿Cuántos blanqueamientos ambulatorios hacés por mes?" value={String(d.blanqueamientos_mes)} onChange={set("blanqueamientos_mes")} opciones={VOLUMENES} error={err.blanqueamientos_mes} />
                     </div>
 
                     <div className="mt-7 grid gap-4 border-t border-line pt-6">
