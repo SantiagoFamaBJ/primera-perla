@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Arrow, Check, CtaForm, ease, fechaCorta, useLanding } from "./shared";
 
-function Visual() {
+function Visual({ compacto = false }: { compacto?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
@@ -23,6 +23,7 @@ function Visual() {
     return () => window.removeEventListener("pointermove", f);
   }, [mx, my]);
 
+  const circId = "circ" + useId().replace(/:/g, "");
   const anillo = "DENSELL WHITE · CP 10 · 16 · 22 · 35 · MUESTRA PROFESIONAL · ";
 
   return (
@@ -46,10 +47,10 @@ function Visual() {
       </svg>
       <svg viewBox="0 0 500 500" className="spin-slow absolute inset-0 h-full w-full">
         <defs>
-          <path id="circ" d="M250,250 m-222,0 a222,222 0 1,1 444,0 a222,222 0 1,1 -444,0" />
+          <path id={circId} d="M250,250 m-222,0 a222,222 0 1,1 444,0 a222,222 0 1,1 -444,0" />
         </defs>
         <text fill="rgba(0,0,0,.35)" fontSize="11" fontWeight="700" letterSpacing="3.4">
-          <textPath href="#circ">{anillo + anillo}</textPath>
+          <textPath href={`#${circId}`}>{anillo + anillo}</textPath>
         </text>
       </svg>
       <motion.div className="absolute inset-[4%]" animate={{ rotate: 360 }} transition={{ duration: 14, repeat: Infinity, ease: "linear" }}>
@@ -68,34 +69,23 @@ function Visual() {
           </motion.div>
         </motion.div>
       </motion.div>
-      <div className="absolute right-0 top-[8%] rounded-md border border-black/10 bg-white/90 px-2.5 py-1.5 shadow-sm backdrop-blur md:px-3.5 md:py-2">
+      {!compacto && (<div className="absolute right-0 top-[8%] rounded-md border border-black/10 bg-white/90 px-2.5 py-1.5 shadow-sm backdrop-blur md:px-3.5 md:py-2">
         <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-mute md:text-[10px]">Gel blanqueador</p>
         <p className="text-[11px] font-bold md:text-sm">Densell White</p>
-      </div>
-      <div className="absolute bottom-[8%] left-0 rounded-md border border-black/10 bg-white/90 px-2.5 py-1.5 shadow-sm backdrop-blur md:px-3.5 md:py-2">
+      </div>)}
+      {!compacto && (<div className="absolute bottom-[8%] left-0 rounded-md border border-black/10 bg-white/90 px-2.5 py-1.5 shadow-sm backdrop-blur md:px-3.5 md:py-2">
         <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-mute md:text-[10px]">Peróxido de carbamida</p>
         <p className="text-[11px] font-bold md:text-sm">10 · 16 · 22 · 35%</p>
-      </div>
+      </div>)}
     </div>
   );
 }
 
 function VisualMovil() {
-  // Versión liviana para celular: se ve apenas carga, sin esperar animaciones
+  // Mismo círculo animado del escritorio, en tamaño celular (se ve apenas carga)
   return (
-    <div className="relative mx-auto h-[176px] w-full max-w-[360px] lg:hidden" aria-hidden="true">
-      <div className="absolute left-1/2 top-1/2 h-[176px] w-[176px] -translate-x-1/2 -translate-y-1/2 rounded-full border-[1.5px] border-brand/70" />
-      <div className="absolute left-1/2 top-1/2 h-[138px] w-[138px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-black/15" />
-      <div className="absolute left-1/2 top-1/2 h-[150px] w-[150px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(241,89,34,.22),transparent_70%)] blur-xl" />
-      <img
-        src="/img/jeringa.webp"
-        alt=""
-        width={633}
-        height={627}
-        fetchPriority="high"
-        className="absolute left-1/2 top-1/2 h-[210px] w-[210px] -translate-x-1/2 -translate-y-1/2 -rotate-[22deg] object-contain drop-shadow-[0_18px_20px_rgba(0,0,0,.25)]"
-      />
-      <span className="absolute bottom-1 right-2 rounded-md border border-black/10 bg-white/95 px-2 py-1 text-[11px] font-bold shadow-sm">CP 10 · 16 · 22 · 35%</span>
+    <div className="relative mx-auto -my-1 w-[236px] lg:hidden">
+      <Visual compacto />
     </div>
   );
 }
@@ -121,7 +111,7 @@ export default function Hero() {
           <div className="hidden lg:block">{bajada}</div>
 
           <ul className="flex flex-wrap gap-2" aria-label="Condiciones">
-            {["Envío sin cargo", "Elegí 10, 16, 22 o 35%", "Sin compra obligatoria"].map((t) => (
+            {["Para matriculados", "Envío sin cargo", "Sin compra obligatoria"].map((t) => (
               <li key={t} className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-[13px] font-bold text-ink">
                 <Check className="h-3.5 w-3.5 text-brand" /> {t}
               </li>
