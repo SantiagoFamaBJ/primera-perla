@@ -29,7 +29,7 @@ function Visual() {
     <div ref={ref} className="relative mx-auto aspect-square w-full max-w-[540px]" style={{ perspective: 1000 }} aria-hidden="true">
       <div className="absolute inset-[14%] rounded-full bg-[radial-gradient(circle,rgba(241,89,34,.28)_0%,rgba(241,89,34,.08)_45%,transparent_70%)] blur-2xl" />
       <svg viewBox="0 0 500 500" className="absolute inset-0 h-full w-full">
-        {[230, 190, 150].map((r, i) => (
+        {[240, 196, 152].map((r, i) => (
           <motion.circle
             key={r}
             cx="250" cy="250" r={r}
@@ -46,16 +46,16 @@ function Visual() {
       </svg>
       <svg viewBox="0 0 500 500" className="spin-slow absolute inset-0 h-full w-full">
         <defs>
-          <path id="circ" d="M250,250 m-212,0 a212,212 0 1,1 424,0 a212,212 0 1,1 -424,0" />
+          <path id="circ" d="M250,250 m-222,0 a222,222 0 1,1 444,0 a222,222 0 1,1 -444,0" />
         </defs>
-        <text fill="rgba(0,0,0,.45)" fontSize="13" fontWeight="700" letterSpacing="4.2">
+        <text fill="rgba(0,0,0,.35)" fontSize="11" fontWeight="700" letterSpacing="3.4">
           <textPath href="#circ">{anillo + anillo}</textPath>
         </text>
       </svg>
       <motion.div className="absolute inset-[4%]" animate={{ rotate: 360 }} transition={{ duration: 14, repeat: Infinity, ease: "linear" }}>
         <span className="absolute left-1/2 top-0 -ml-1.5 h-3 w-3 rounded-full bg-brand shadow-[0_0_16px_3px_rgba(241,89,34,.55)]" />
       </motion.div>
-      <motion.div style={{ rotateX: rx, rotateY: ry }} className="absolute inset-[13%]">
+      <motion.div style={{ rotateX: rx, rotateY: ry }} className="absolute inset-[5%]">
         <motion.div
           className="relative h-full w-full"
           initial={{ opacity: 0, rotate: -30, scale: 0.8 }}
@@ -68,13 +68,13 @@ function Visual() {
           </motion.div>
         </motion.div>
       </motion.div>
-      <div className="absolute right-0 top-[15%] rounded-md border border-black/10 bg-white/90 px-3.5 py-2 shadow-sm backdrop-blur">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-mute">Gel blanqueador</p>
-        <p className="text-sm font-bold">Densell White</p>
+      <div className="absolute right-0 top-[8%] rounded-md border border-black/10 bg-white/90 px-2.5 py-1.5 shadow-sm backdrop-blur md:px-3.5 md:py-2">
+        <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-mute md:text-[10px]">Gel blanqueador</p>
+        <p className="text-[11px] font-bold md:text-sm">Densell White</p>
       </div>
-      <div className="absolute bottom-[13%] left-0 rounded-md border border-black/10 bg-white/90 px-3.5 py-2 shadow-sm backdrop-blur">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-mute">Peróxido de carbamida</p>
-        <p className="text-sm font-bold">10 · 16 · 22 · 35%</p>
+      <div className="absolute bottom-[8%] left-0 rounded-md border border-black/10 bg-white/90 px-2.5 py-1.5 shadow-sm backdrop-blur md:px-3.5 md:py-2">
+        <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-mute md:text-[10px]">Peróxido de carbamida</p>
+        <p className="text-[11px] font-bold md:text-sm">10 · 16 · 22 · 35%</p>
       </div>
     </div>
   );
@@ -119,7 +119,7 @@ export default function Hero() {
             </p>
           </div>
         </div>
-        <div className="mx-auto w-[78%] sm:w-[62%] lg:w-full">
+        <div className="mx-auto w-full sm:w-[72%] lg:w-full">
           <Visual />
         </div>
       </div>
