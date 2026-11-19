@@ -4,6 +4,7 @@ export type Concentracion = {
   nivel: string; // "Ambulatorio" / "En consultorio"
   descripcion: string;
   codigo: string;
+  presentacion: string;
   detalles: string; // una característica por línea (según la ficha)
 };
 
@@ -20,6 +21,7 @@ export type Config = {
   cierre: string; // ISO con zona horaria
   cerradoManual: boolean;
   pixelId: string;
+  gaId: string; // Google Analytics 4 (G-XXXX), opcional
   webUrl: string;
   webLabel: string;
   whatsapp: string; // solo números, ej 5491164362400
@@ -40,6 +42,7 @@ export const ESTADOS = [
   { id: "pendiente", label: "Pendiente de validar", cuenta: true },
   { id: "aprobada", label: "Aprobada", cuenta: true },
   { id: "enviada", label: "Jeringa enviada", cuenta: true },
+  { id: "entregada", label: "Jeringa entregada", cuenta: true },
   { id: "caso_recibido", label: "Caso recibido", cuenta: true },
   { id: "rechazada", label: "Rechazada", cuenta: false },
 ] as const;

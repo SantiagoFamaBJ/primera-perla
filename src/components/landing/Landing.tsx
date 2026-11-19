@@ -14,7 +14,6 @@ import Resultado from "./Resultado";
 import Beneficio from "./Beneficio";
 import Formulario from "./Formulario";
 import Casos from "./Casos";
-import Linea from "./Linea";
 import Faq from "./Faq";
 import CtaFinal from "./CtaFinal";
 import Footer from "./Footer";
@@ -57,7 +56,6 @@ export default function Landing({ config, estadoInicial }: { config: Config; est
           <Casos />
           <Beneficio />
           <Formulario onEstado={setEstado} onSeleccion={setSeleccion} />
-          <Linea />
           <Faq />
           <CtaFinal />
         </main>

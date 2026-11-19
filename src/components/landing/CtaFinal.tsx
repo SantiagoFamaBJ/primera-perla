@@ -1,35 +1,30 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Arrow, External, WebLink, ease, useLanding } from "./shared";
+import { Arrow, CtaForm, useLanding } from "./shared";
 
 export default function CtaFinal() {
   const { estado } = useLanding();
+  if (!estado.abierto) return null;
   return (
-    <section className="relative overflow-hidden bg-brand py-20 md:py-28">
-      <motion.img
-        src="/img/jeringa.png"
+    <section data-oculta-cta className="relative overflow-hidden bg-brand py-16 md:py-24">
+      <img
+        src="/img/jeringa.webp"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute -right-16 top-1/2 hidden w-[520px] -translate-y-1/2 opacity-90 md:block"
-        initial={{ rotate: -40, x: 120, opacity: 0 }}
-        whileInView={{ rotate: -12, x: 0, opacity: 0.9 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, ease }}
+        loading="lazy"
+        width={633}
+        height={627}
+        className="pointer-events-none absolute -right-20 top-1/2 hidden w-[480px] -translate-y-1/2 -rotate-12 opacity-90 md:block"
       />
       <div className="relative mx-auto max-w-[1200px] px-5 md:px-8">
-        <div className="max-w-[640px]">
+        <div className="max-w-[640px] text-white">
           <h2 className="text-4xl md:text-6xl font-extrabold tracking-[-0.03em] leading-[1.02]">
-            {estado.abierto ? (
-              <>Probalo con tu próximo paciente.<br /><span className="text-black">Sin costo.</span></>
-            ) : (
-              <>Conocé toda la línea Densell White en dentalmedrano.com.</>
-            )}
+            Probalo con tu próximo paciente.
           </h2>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            {estado.abierto && <a href="#formulario" className="btn btn-dark">Pedí tu jeringa gratis <Arrow /></a>}
-            <WebLink lugar="cta-final" className="btn border border-white/70 text-white hover:bg-white hover:text-brand">Ir a dentalmedrano.com <External /></WebLink>
-          </div>
+          <p className="mt-4 text-lg font-semibold text-white/90">Muestra y envío sin cargo. Exclusivo para odontólogos matriculados.</p>
+          <CtaForm lugar="cta-final" className="btn btn-dark mt-8 w-full sm:w-auto !min-h-[56px] !text-base">
+            Pedí tu muestra gratis <Arrow />
+          </CtaForm>
         </div>
       </div>
     </section>

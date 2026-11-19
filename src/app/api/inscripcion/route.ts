@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/supabase";
 import { calcularEstado, getConfig, getInscriptos } from "@/lib/data";
+import { enviarLeadCapi } from "@/lib/capi";
 import { ESTADOS_QUE_CUENTAN } from "@/lib/types";
 import { PASO1, PASO2, normMatricula, normWhatsapp, validar } from "@/lib/validate";
 
@@ -9,11 +10,12 @@ export const dynamic = "force-dynamic";
 const txt = (v: unknown, max = 200) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const MSG_CERRADO = "La inscripción está cerrada: se agotó el stock o terminó el plazo.";
 
-// Paso 1: datos clave. Se guarda como "incompleta" (no ocupa cupo todavía).
+// Paso 1: datos profesionales. Se guarda como "incompleta" (no ocupa stock todavía).
+// Si ya existe (volvió al paso 1 y corrigió algo), se actualiza la misma fila en vez de crear otra.
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
   const errores = validar(PASO1, body);
-  if (!body.acepta_datos) errores.acepta_datos = "Necesitamos tu autorización para usar tus datos.";
+  if (!body.acepta_datos) errores.acepta_datos = "Necesitamos tu autorización para gestionar la solicitud.";
   if (Object.keys(errores).length) return NextResponse.json({ ok: false, errores }, { status: 400 });
 
   const config = await getConfig();
@@ -29,26 +31,42 @@ export async function POST(req: Request) {
     .limit(1);
   if (dup?.length)
     return NextResponse.json(
-      { ok: false, errores: { matricula: "Esta matrícula ya está inscripta. Si creés que es un error, escribinos por WhatsApp." } },
+      { ok: false, errores: { matricula: "Esta matrícula ya tiene una solicitud. Si creés que es un error, escribinos por WhatsApp." } },
       { status: 409 },
     );
+
+  const datos = {
+    nombre: txt(body.nombre),
+    matricula: txt(body.matricula, 40),
+    matricula_norm,
+    email: txt(body.email).toLowerCase(),
+    whatsapp: normWhatsapp(txt(body.whatsapp, 40)),
+    concentracion: txt(body.concentracion, 20),
+    acepta_datos: true,
+    updated_at: new Date().toISOString(),
+  };
+
+  const idPrevio = txt(body.id, 60);
+  if (idPrevio) {
+    const { data: upd } = await db().from("pp_inscripciones").update(datos).eq("id", idPrevio).eq("estado", "parcial").select("id");
+    if (upd?.length) return NextResponse.json({ ok: true, id: idPrevio });
+  }
 
   const { data, error } = await db()
     .from("pp_inscripciones")
     .insert({
-      nombre: txt(body.nombre),
-      matricula: txt(body.matricula, 40),
-      matricula_norm,
-      email: txt(body.email).toLowerCase(),
-      whatsapp: normWhatsapp(txt(body.whatsapp, 40)),
-      concentracion: txt(body.concentracion, 20),
-      acepta_datos: true,
+      ...datos,
       utm_source: txt(body.utm_source),
       utm_medium: txt(body.utm_medium),
       utm_campaign: txt(body.utm_campaign),
       utm_content: txt(body.utm_content),
       utm_term: txt(body.utm_term),
+      campaign_id: txt(body.campaign_id, 60),
+      adset_id: txt(body.adset_id, 60),
+      ad_id: txt(body.ad_id, 60),
       fbclid: txt(body.fbclid, 500),
+      fbp: txt(body.fbp, 200),
+      fbc: txt(body.fbc, 500),
       landing_url: txt(body.landing_url, 500),
       user_agent: txt(req.headers.get("user-agent"), 300),
     })
@@ -59,12 +77,12 @@ export async function POST(req: Request) {
   return NextResponse.json({ ok: true, id: data.id });
 }
 
-// Paso 2: datos de consultorio + bases. Acá se confirma y ocupa cupo.
+// Paso 2: datos de envío + bases. Acá se confirma la solicitud (el Lead se cuenta solo si esto sale bien).
 export async function PATCH(req: Request) {
   const body = await req.json().catch(() => ({}));
   const id = txt(body.id, 60);
   const errores = validar(PASO2, body);
-  if (!body.acepta_bases) errores.acepta_bases = "Tenés que aceptar las bases y condiciones.";
+  if (!body.acepta_bases) errores.acepta_bases = "Tenés que aceptar las bases y el compromiso de presentar el caso.";
   if (!id) return NextResponse.json({ ok: false, error: "Falta completar el paso 1." }, { status: 400 });
   if (Object.keys(errores).length) return NextResponse.json({ ok: false, errores }, { status: 400 });
 
@@ -74,23 +92,35 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ ok: false, error: MSG_CERRADO, cerrado: true }, { status: 409 });
 
   const datos = {
-    tipo_matricula: txt(body.tipo_matricula),
-    provincia_matricula: txt(body.provincia_matricula),
-    especialidad: txt(body.especialidad),
-    consultorio: txt(body.consultorio),
+    domicilio: txt(body.domicilio),
+    codigo_postal: txt(body.codigo_postal, 12).toUpperCase(),
     localidad: txt(body.localidad),
     provincia: txt(body.provincia),
-    instagram: txt(body.instagram, 80),
+    tipo_matricula: txt(body.tipo_matricula),
+    especialidad: txt(body.especialidad),
     marca_actual: txt(body.marca_actual),
     blanqueamientos_mes: txt(body.blanqueamientos_mes),
     acepta_bases: true,
+    acepta_publicacion: Boolean(body.acepta_publicacion),
     acepta_novedades: Boolean(body.acepta_novedades),
   };
 
   const { data, error } = await db().rpc("pp_confirmar", { p_id: id, p_datos: datos, p_cupo: config.cupo });
-  if (error) return NextResponse.json({ ok: false, error: "No pudimos confirmar tu inscripción. Probá de nuevo." }, { status: 500 });
+  if (error) return NextResponse.json({ ok: false, error: "No pudimos confirmar tu solicitud. Probá de nuevo." }, { status: 500 });
   if (data === "cupo") return NextResponse.json({ ok: false, error: "Se agotó el stock disponible para el programa. Gracias por tu interés.", cerrado: true }, { status: 409 });
-  if (data === "duplicada") return NextResponse.json({ ok: false, error: "Esta matrícula ya está inscripta." }, { status: 409 });
-  if (data !== "ok") return NextResponse.json({ ok: false, error: "No encontramos tu inscripción. Volvé a empezar." }, { status: 404 });
-  return NextResponse.json({ ok: true });
+  if (data === "duplicada") return NextResponse.json({ ok: false, error: "Esta matrícula ya tiene una solicitud." }, { status: 409 });
+  if (data !== "ok") return NextResponse.json({ ok: false, error: "No encontramos tu solicitud. Volvé a empezar." }, { status: 404 });
+
+  const { data: fila } = await db().from("pp_inscripciones").select("fbp, fbc, landing_url, concentracion").eq("id", id).single();
+  await enviarLeadCapi({
+    eventId: `lead-${id}`,
+    url: fila?.landing_url || req.headers.get("referer") || "",
+    ip: (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || null,
+    ua: req.headers.get("user-agent"),
+    fbp: fila?.fbp,
+    fbc: fila?.fbc,
+    concentracion: fila?.concentracion,
+  });
+
+  return NextResponse.json({ ok: true, eventId: `lead-${id}` });
 }

@@ -14,8 +14,13 @@ export async function GET() {
 
 export async function PATCH(req: Request) {
   if (!(await esAdmin())) return NextResponse.json({ ok: false }, { status: 401 });
-  const { id, estado, notas } = await req.json().catch(() => ({}));
+  const body = await req.json().catch(() => ({}));
+  const { id, estado, notas } = body;
   const cambios: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  // Seguimiento comercial editable desde el admin
+  for (const k of ["cupon_codigo", "compra_detalle"]) if (body[k] !== undefined) cambios[k] = String(body[k]).slice(0, 300) || null;
+  for (const k of ["cupon_entregado_at", "cupon_usado_at"]) if (body[k] !== undefined) cambios[k] = body[k] ? new Date(body[k]).toISOString() : null;
+  if (body.compra_monto !== undefined) cambios.compra_monto = body.compra_monto === "" || body.compra_monto === null ? null : Number(String(body.compra_monto).replace(/[^\d.]/g, "")) || null;
   if (estado !== undefined) {
     if (!ESTADOS.some((e) => e.id === estado)) return NextResponse.json({ ok: false }, { status: 400 });
     cambios.estado = estado;

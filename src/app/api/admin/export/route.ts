@@ -7,10 +7,14 @@ export const dynamic = "force-dynamic";
 const COLS: [string, string][] = [
   ["created_at", "Fecha"], ["estado", "Estado"], ["nombre", "Nombre"], ["matricula", "Matrícula"],
   ["tipo_matricula", "Tipo matrícula"], ["provincia_matricula", "Provincia matrícula"], ["especialidad", "Especialidad"],
-  ["concentracion", "Concentración"], ["whatsapp", "WhatsApp"], ["email", "Email"], ["consultorio", "Consultorio"],
-  ["localidad", "Localidad"], ["provincia", "Provincia"], ["instagram", "Instagram"], ["marca_actual", "Marca actual"],
-  ["blanqueamientos_mes", "Blanqueamientos/mes"], ["acepta_novedades", "Acepta novedades"], ["utm_source", "utm_source"],
-  ["utm_campaign", "utm_campaign"], ["utm_content", "utm_content"], ["notas", "Notas"],
+  ["concentracion", "Concentración"], ["whatsapp", "WhatsApp"], ["email", "Email"],
+  ["domicilio", "Domicilio"], ["codigo_postal", "CP"], ["localidad", "Localidad"], ["provincia", "Provincia"],
+  ["marca_actual", "Marca actual"], ["blanqueamientos_mes", "Blanqueamientos/mes"],
+  ["acepta_publicacion", "Autoriza publicación"], ["acepta_novedades", "Acepta novedades"],
+  ["aprobada_at", "Aprobada"], ["rechazada_at", "Rechazada"], ["enviada_at", "Enviada"], ["entregada_at", "Entregada"], ["caso_recibido_at", "Caso recibido"],
+  ["cupon_codigo", "Cupón"], ["cupon_entregado_at", "Cupón entregado"], ["cupon_usado_at", "Cupón usado"], ["compra_monto", "Compra $"], ["compra_detalle", "Compra detalle"],
+  ["utm_source", "utm_source"], ["utm_medium", "utm_medium"], ["utm_campaign", "utm_campaign"], ["utm_content", "utm_content"],
+  ["campaign_id", "campaign_id"], ["adset_id", "adset_id"], ["ad_id", "ad_id"], ["notas", "Notas"],
 ];
 
 export async function GET() {
@@ -24,7 +28,7 @@ export async function GET() {
       COLS.map(([k]) => {
         let v = r[k];
         if (k === "estado") v = label(v);
-        if (k === "created_at") v = new Date(v).toLocaleString("es-AR", { timeZone: "America/Buenos_Aires" });
+        if ((k === "created_at" || k.endsWith("_at")) && v) v = new Date(v).toLocaleString("es-AR", { timeZone: "America/Buenos_Aires" });
         if (typeof v === "boolean") v = v ? "Sí" : "No";
         return esc(v);
       }).join(";"),

@@ -24,12 +24,12 @@ export const PASO1: Record<string, Check> = {
 };
 
 export const PASO2: Record<string, Check> = {
-  tipo_matricula: req("Elegí el tipo de matrícula."),
-  provincia_matricula: req("Elegí la provincia de la matrícula."),
-  especialidad: req("Elegí tu especialidad."),
-  consultorio: req("Escribí el nombre de tu consultorio o institución."),
+  domicilio: (v) => ((v || "").trim().length >= 5 ? null : "Escribí calle, número y, si corresponde, piso o consultorio."),
+  codigo_postal: (v) => (/^[A-Za-z]?\d{4}[A-Za-z]{0,3}$/.test((v || "").replace(/\s/g, "")) ? null : "Escribí un código postal válido (ej: 1425 o C1425ABC)."),
   localidad: req("Escribí tu localidad."),
   provincia: req("Elegí tu provincia."),
+  tipo_matricula: req("Elegí el tipo de matrícula."),
+  especialidad: req("Elegí tu especialidad."),
   marca_actual: req("Elegí una opción."),
   blanqueamientos_mes: req("Elegí una opción."),
 };

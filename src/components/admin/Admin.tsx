@@ -101,7 +101,7 @@ function Inscripciones() {
       <div className="mt-4 overflow-x-auto rounded-lg bg-white">
         <table className="w-full min-w-[860px] text-left text-sm">
           <thead className="border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-500">
-            <tr><th className="p-3">Fecha</th><th className="p-3">Nombre</th><th className="p-3">Matrícula</th><th className="p-3">Conc.</th><th className="p-3">WhatsApp</th><th className="p-3">Provincia</th><th className="p-3">Estado</th><th className="p-3" /></tr>
+            <tr><th className="p-3">Fecha</th><th className="p-3">Nombre</th><th className="p-3">Matrícula</th><th className="p-3">Conc.</th><th className="p-3">WhatsApp</th><th className="p-3">Provincia / Localidad</th><th className="p-3">Estado</th><th className="p-3" /></tr>
           </thead>
           <tbody>
             {cargando && <tr><td colSpan={8} className="p-6 text-center text-neutral-500">Cargando…</td></tr>}
@@ -114,7 +114,7 @@ function Inscripciones() {
                   <td className="p-3">{r.matricula} <span className="text-neutral-400">{r.tipo_matricula ? `· ${String(r.tipo_matricula).match(/\((\w+)\)/)?.[1] ?? ""}` : ""}</span></td>
                   <td className="p-3">{r.concentracion}</td>
                   <td className="p-3"><a className="text-[#f15922] font-semibold" href={`https://wa.me/549${r.whatsapp}`} target="_blank" rel="noopener">{r.whatsapp}</a></td>
-                  <td className="p-3">{r.provincia || "—"}</td>
+                  <td className="p-3">{r.provincia ? `${r.provincia}${r.localidad ? ` · ${r.localidad}` : ""}` : "—"}</td>
                   <td className="p-3">
                     <select className="rounded border border-neutral-300 px-2 py-1.5 text-sm" value={r.estado} onChange={(e) => cambiar(r.id, { estado: e.target.value })}>
                       {ESTADOS.map((e) => <option key={e.id} value={e.id}>{e.label}</option>)}
@@ -126,9 +126,16 @@ function Inscripciones() {
                   <tr className="bg-neutral-50">
                     <td colSpan={8} className="p-4">
                       <div className="grid gap-x-8 gap-y-1.5 text-sm md:grid-cols-3">
-                        {[["Email", r.email], ["Especialidad", r.especialidad], ["Consultorio", r.consultorio], ["Localidad", r.localidad], ["Prov. matrícula", r.provincia_matricula], ["Instagram", r.instagram], ["Marca actual", r.marca_actual], ["Blanq./mes", r.blanqueamientos_mes], ["Novedades", r.acepta_novedades ? "Sí" : "No"], ["Origen", [r.utm_source, r.utm_campaign, r.utm_content].filter(Boolean).join(" / ") || "—"]].map(([k, v]) => (
+                        {[["Email", r.email], ["Domicilio", r.domicilio], ["CP", r.codigo_postal], ["Localidad", r.localidad], ["Especialidad", r.especialidad], ["Marca actual", r.marca_actual], ["Blanq./mes", r.blanqueamientos_mes], ["Autoriza publicar", r.acepta_publicacion ? "Sí" : "No"], ["Novedades", r.acepta_novedades ? "Sí" : "No"], ["Origen", [r.utm_source, r.utm_campaign, r.utm_content].filter(Boolean).join(" / ") || "—"], ["Anuncio (ad_id)", r.ad_id]].map(([k, v]) => (
                           <p key={String(k)}><span className="text-neutral-500">{k}:</span> {String(v ?? "—") || "—"}</p>
                         ))}
+                      </div>
+                      <div className="mt-4 grid gap-3 md:grid-cols-5">
+                        <div><label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Cupón</label><input className={`${inputCls} mt-1`} defaultValue={String(r.cupon_codigo ?? "")} onBlur={(e) => cambiar(r.id, { cupon_codigo: e.target.value })} /></div>
+                        <div><label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Cupón entregado</label><input type="date" className={`${inputCls} mt-1`} defaultValue={r.cupon_entregado_at ? String(r.cupon_entregado_at).slice(0, 10) : ""} onBlur={(e) => cambiar(r.id, { cupon_entregado_at: e.target.value })} /></div>
+                        <div><label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Cupón usado</label><input type="date" className={`${inputCls} mt-1`} defaultValue={r.cupon_usado_at ? String(r.cupon_usado_at).slice(0, 10) : ""} onBlur={(e) => cambiar(r.id, { cupon_usado_at: e.target.value })} /></div>
+                        <div><label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Compra $</label><input inputMode="decimal" className={`${inputCls} mt-1`} defaultValue={String(r.compra_monto ?? "")} onBlur={(e) => cambiar(r.id, { compra_monto: e.target.value })} /></div>
+                        <div><label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Detalle compra</label><input className={`${inputCls} mt-1`} defaultValue={String(r.compra_detalle ?? "")} onBlur={(e) => cambiar(r.id, { compra_detalle: e.target.value })} /></div>
                       </div>
                       <label className="mt-3 block text-xs font-bold uppercase tracking-wider text-neutral-500">Notas internas</label>
                       <textarea className={`${inputCls} mt-1`} rows={2} defaultValue={String(r.notas ?? "")} onBlur={(e) => cambiar(r.id, { notas: e.target.value })} />
@@ -224,6 +231,7 @@ function Configuracion({ seccion }: { seccion: "general" | "contenido" | "produc
             <label className="flex items-center gap-2 py-2"><input type="checkbox" checked={c.cerradoManual} onChange={(e) => set("cerradoManual", e.target.checked)} className="h-5 w-5 accent-[#f15922]" /> Cerrada</label>
           </F>
           <F label="ID del Pixel de Meta" hint="Solo el número. Vacío = sin Pixel."><input className={inputCls} value={c.pixelId} onChange={(e) => set("pixelId", e.target.value)} placeholder="123456789012345" /></F>
+          <F label="ID de Google Analytics 4" hint="Formato G-XXXXXXX. Vacío = sin GA4."><input className={inputCls} value={c.gaId} onChange={(e) => set("gaId", e.target.value)} placeholder="G-XXXXXXXXXX" /></F>
           <F label="Web a la que llevan los botones"><input className={inputCls} value={c.webUrl} onChange={(e) => set("webUrl", e.target.value)} /></F>
           <F label="Texto del link a la web (header)"><input className={inputCls} value={c.webLabel} onChange={(e) => set("webLabel", e.target.value)} /></F>
           <F label="WhatsApp (solo números)"><input className={inputCls} value={c.whatsapp} onChange={(e) => set("whatsapp", e.target.value)} /></F>
@@ -248,8 +256,8 @@ function Configuracion({ seccion }: { seccion: "general" | "contenido" | "produc
           <h3 className="font-bold">Concentraciones</h3>
           <Lista
             items={c.concentraciones}
-            vacio={{ valor: "", numero: "", nivel: "", descripcion: "", codigo: "", detalles: "" }}
-            campos={[{ k: "valor", label: "Valor (ej: CP 10%)" }, { k: "numero", label: "Número" }, { k: "nivel", label: "Uso (ej: Ambulatorio)" }, { k: "codigo", label: "Código" }, { k: "descripcion", label: "Descripción" }, { k: "detalles", label: "Características (una por línea)", tipo: "textarea" }]}
+            vacio={{ valor: "", numero: "", nivel: "", descripcion: "", codigo: "", presentacion: "Jeringa de 2 ml", detalles: "" }}
+            campos={[{ k: "valor", label: "Valor (ej: CP 10%)" }, { k: "numero", label: "Número" }, { k: "nivel", label: "Uso (ej: Ambulatorio)" }, { k: "codigo", label: "Código" }, { k: "presentacion", label: "Presentación" }, { k: "descripcion", label: "Descripción" }, { k: "detalles", label: "Características (una por línea)", tipo: "textarea" }]}
             onChange={(v) => set("concentraciones", v)}
           />
         </div>

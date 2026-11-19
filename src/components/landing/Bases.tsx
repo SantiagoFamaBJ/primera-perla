@@ -14,23 +14,21 @@ export default function Bases({ abierto, onClose }: { abierto: boolean; onClose:
     if (!abierto && d.open) d.close();
   }, [abierto]);
 
-  const organiza = config.razonSocial
-    ? `${config.razonSocial}${config.cuit ? ` (CUIT ${config.cuit})` : ""}`
-    : "Dental Medrano";
+  const organiza = config.razonSocial ? `${config.razonSocial}${config.cuit ? ` (CUIT ${config.cuit})` : ""}` : "Dental Medrano";
 
   const puntos = [
-    `Organiza ${organiza}.`,
-    `Vigencia: inscripción desde la publicación hasta el ${fechaLarga(config.cierre)} a las 23:59, o hasta agotar stock, lo que ocurra primero.`,
-    "Participan odontólogos con matrícula vigente en la República Argentina. Una muestra por matrícula.",
-    "Jeringas Densell White de la concentración elegida, hasta agotar stock. Se asignan por orden de inscripción validada.",
-    "Participar no requiere compra. La muestra no tiene costo para el profesional.",
-    "El profesional se compromete a enviar su caso clínico dentro de los 60 días de recibida la muestra: foto inicial y final con guía de color, ficha breve y declaración de consentimiento del paciente.",
-    "Al presentar el caso, el profesional recibe un beneficio del 20% de descuento en productos Densell White, válido durante los 7 días corridos siguientes a la presentación.",
+    `Organiza ${organiza} ("Dental Medrano").`,
+    `Vigencia: solicitudes desde la publicación hasta el ${fechaLarga(config.cierre)} a las 23:59, o hasta agotar stock, lo que ocurra primero.`,
+    "Participan odontólogos con matrícula vigente en la República Argentina. Una muestra por matrícula. Dental Medrano verifica la matrícula antes del envío.",
+    "La muestra es una jeringa Densell White de 2 ml de la concentración elegida (10, 16, 22 o 35% de peróxido de carbamida), sujeta a validación y disponibilidad de stock. Se asignan por orden de solicitud validada.",
+    "Participar no requiere compra. La muestra y su envío no tienen costo para el profesional. El envío se realiza al domicilio indicado en la solicitud.",
+    "Una jeringa de 2 ml puede no alcanzar para completar un tratamiento. La muestra no garantiza un resultado clínico específico. La indicación, el protocolo y la supervisión del tratamiento corresponden al odontólogo según su criterio profesional.",
+    "Al solicitar la muestra, el profesional se compromete a presentar su caso clínico dentro de los 60 días de recibida: foto inicial y final con guía de color, con iluminación y encuadre comparables; datos breves de la concentración usada, la duración y sus observaciones; y la confirmación de que cuenta con el consentimiento del paciente para documentar el caso.",
+    "Presentar el caso no implica autorizar su publicación. La autorización para que Dental Medrano publique el caso es opcional y se otorga por separado. Cualquier publicación requiere además el consentimiento del paciente y se realiza preservando su identidad y privacidad.",
+    "Al presentar el caso conforme a estas bases, el profesional recibe por WhatsApp un cupón de 20% de descuento en productos Densell White, válido durante 30 días corridos desde su entrega. El cupón no se entrega al completar la solicitud.",
     ...(config.mostrarDescuentoExtra ? [`Además, los participantes acceden a ${config.descuentoExtra} mayores a ${config.descuentoExtraMinimo}.`] : []),
-    "El producto es de venta exclusiva a profesionales. El tratamiento es indicado y supervisado por el odontólogo según su criterio clínico.",
-    "Al participar, el profesional autoriza a Dental Medrano a publicar su caso con su nombre y matrícula, sin contraprestación adicional.",
-    "Los datos personales se tratan según la Ley 25.326, solo para gestionar el programa y, si el profesional lo acepta, para enviarle novedades.",
-    "Dental Medrano puede rechazar inscripciones con datos incompletos o matrícula no verificable.",
+    "Los datos personales se tratan según la Ley 25.326 de Protección de Datos Personales, solo para gestionar la solicitud y el programa. El envío de novedades comerciales requiere un consentimiento separado y opcional. No se comparten datos clínicos ni imágenes de pacientes con herramientas publicitarias.",
+    "Dental Medrano puede rechazar solicitudes con datos incompletos, matrícula no verificable o que no cumplan estas bases.",
   ];
 
   return (
@@ -39,13 +37,13 @@ export default function Bases({ abierto, onClose }: { abierto: boolean; onClose:
       onClose={onClose}
       onClick={(e) => { if (e.target === ref.current) onClose(); }}
       aria-labelledby="bases-titulo"
-      className="m-auto w-[calc(100%-32px)] max-w-[720px] rounded-xl bg-paper p-0 text-black backdrop:bg-black/75 backdrop:backdrop-blur-sm"
+      className="m-auto w-[calc(100%-24px)] max-w-[720px] rounded-xl bg-white p-0 text-ink backdrop:bg-black/60"
     >
-      <div className="relative max-h-[82vh] overflow-y-auto p-7 md:p-10">
-        <button type="button" onClick={onClose} aria-label="Cerrar las bases y condiciones" className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full text-2xl hover:bg-black/5">×</button>
+      <div className="relative max-h-[85vh] overflow-y-auto p-6 md:p-10">
+        <button type="button" onClick={onClose} aria-label="Cerrar las bases y condiciones" className="absolute right-3 top-3 grid h-11 w-11 place-items-center rounded-full text-2xl hover:bg-surface">×</button>
         <p className="eyebrow">{config.programa} · Densell White</p>
         <h3 id="bases-titulo" className="mt-3 text-3xl font-extrabold tracking-tight">Bases y condiciones</h3>
-        <ol className="mt-6 grid list-decimal gap-3 pl-5 text-[15px] leading-relaxed text-black/70">
+        <ol className="mt-6 grid list-decimal gap-3 pl-5 text-[15px] leading-relaxed text-soft">
           {puntos.map((p, i) => <li key={i}>{p}</li>)}
         </ol>
         <button type="button" onClick={onClose} className="btn btn-brand mt-8">Entendido</button>
