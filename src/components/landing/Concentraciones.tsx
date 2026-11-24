@@ -16,7 +16,7 @@ export default function Concentraciones() {
             </h2>
             <hr className="rule" />
             <p className="max-w-[34em] text-[17px] text-ink-soft md:text-[20px]">
-              Gel de peróxido de carbamida en jeringa individual de 2 ml. Elegís la concentración que querés probar y la usás según tu protocolo.
+              Elegís una concentración y recibís 2 jeringas de 2 ml para usar según tu protocolo. Datos tomados de las fichas del producto.
             </p>
           </Reveal>
           <Reveal delay={0.1} className="relative py-6">
@@ -27,31 +27,51 @@ export default function Concentraciones() {
         <div className={`mt-14 grid border-y border-line-light ${n >= 3 ? "md:grid-cols-3" : n === 2 ? "md:grid-cols-2" : ""}`}>
           {config.concentraciones.map((c) => {
             const activa = seleccion === c.valor;
-            const detalles = (c.detalles || "").split("\n").map((l) => l.trim()).filter(Boolean);
+            const agotada = estado.agotadas.includes(c.valor);
+            const formula = (c.detalles || "").split("\n").map((l) => l.trim()).filter(Boolean);
+            const filas: [string, React.ReactNode][] = [
+              ["Presentación", c.presentacion || "2 jeringas de 2 ml"],
+              ["Indicación", c.indicacion || "Según indicación profesional."],
+              ["Protocolo de referencia", c.protocolo || "Según indicación profesional."],
+              ["Formulación", formula.length ? formula.join(" · ") : "Peróxido de carbamida al " + c.numero + "%."],
+            ];
             return (
-              <div key={c.valor} className={`flex flex-col items-center border-b border-line-light px-6 pb-9 pt-10 text-center transition-colors last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 ${activa ? "bg-pearl-2" : "hover:bg-pearl-2"}`}>
-                <p className="text-[13px] font-medium tracking-[0.3em] text-ink-soft">CP</p>
-                <p className="font-display text-[110px] font-light leading-none md:text-[130px]">
-                  {c.numero}<span className="text-[0.36em]">%</span>
-                </p>
-                <p className="mt-3 text-[13px] font-medium uppercase tracking-[0.26em]">{c.nivel}</p>
-                <p className="mt-2 font-display text-[24px] font-medium italic leading-snug">{c.descripcion}</p>
-                <ul className="mt-4 grid gap-1 text-[14px] text-ink-soft">
-                  {c.presentacion && <li>{c.presentacion}</li>}
-                  {detalles.map((l) => <li key={l}>{l}</li>)}
-                </ul>
-                {c.codigo && <p className="mt-4 text-[12px] font-medium tracking-[0.16em] text-ink-soft">CÓD. {c.codigo}</p>}
+              <div key={c.valor} className={`relative flex flex-col border-b border-line-light px-6 pb-9 pt-10 transition-colors last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 ${agotada ? "bg-pearl-2/60" : activa ? "bg-pearl-2" : "hover:bg-pearl-2"}`}>
+                {agotada && <span className="absolute right-5 top-5 rounded-full bg-onyx px-3 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-pearl">Agotado</span>}
+                <div className="text-center">
+                  <p className="text-[13px] font-medium tracking-[0.3em] text-ink-soft">CP</p>
+                  <p className={`font-display text-[110px] font-light leading-none md:text-[130px] ${agotada ? "text-ink-soft/60 line-through decoration-[3px]" : ""}`}>
+                    {c.numero}<span className="text-[0.36em]">%</span>
+                  </p>
+                  <p className="mt-3 text-[13px] font-medium uppercase tracking-[0.26em]">{c.nivel}</p>
+                  <p className="mt-2 font-display text-[22px] font-medium italic leading-snug">{c.descripcion}</p>
+                </div>
+                <dl className="mt-6 grid gap-3 border-t border-line-light pt-5 text-left">
+                  {filas.map(([k, v]) => (
+                    <div key={k}>
+                      <dt className="text-[11px] font-medium uppercase tracking-[0.2em] text-champagne-ink">{k}</dt>
+                      <dd className="mt-0.5 text-[15px] leading-snug text-ink-soft">{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+                {c.codigo && <p className="mt-4 text-center text-[12px] font-medium tracking-[0.16em] text-ink-soft">CÓD. {c.codigo}</p>}
                 {estado.abierto && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      track("SeleccionConcentracion", { concentracion: c.valor }, { custom: true, ga: "select_concentracion" });
-                      elegir(c.valor);
-                    }}
-                    className={`btn mt-6 w-full max-w-[280px] ${activa ? "btn-brand" : "bg-onyx text-pearl hover:bg-brand"}`}
-                  >
-                    {activa ? `Elegiste ${c.numero}%` : `Quiero probar ${c.numero}%`} <Arrow />
-                  </button>
+                  <div className="mt-auto flex justify-center pt-6">
+                    {agotada ? (
+                      <span className="btn w-full max-w-[280px] cursor-not-allowed border-line-light text-ink-soft">Agotado</span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          track("SeleccionConcentracion", { concentracion: c.valor }, { custom: true, ga: "select_concentracion" });
+                          elegir(c.valor);
+                        }}
+                        className={`btn w-full max-w-[280px] ${activa ? "btn-brand" : "bg-onyx text-pearl hover:bg-brand"}`}
+                      >
+                        {activa ? `Elegiste ${c.numero}%` : `Quiero probar ${c.numero}%`} <Arrow />
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             );

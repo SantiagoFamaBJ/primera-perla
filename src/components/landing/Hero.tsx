@@ -106,7 +106,7 @@ export default function Hero() {
   const corte = Math.max(0, tit.length - 2);
   const bajada = <p className="max-w-[30em] whitespace-pre-line text-[17px] leading-relaxed text-sand md:text-[20px]">{config.heroBajada}</p>;
   const facts = [
-    { n: "2 ml", l: "Muestra sin cargo" },
+    { n: "2", l: "Jeringas sin cargo" },
     { n: fechaCorta(config.cierre), l: "Cierre de inscripción" },
     { n: "20%", l: "Off al presentar tu caso" },
   ];
@@ -132,7 +132,7 @@ export default function Hero() {
             )}
             <p className="flex items-start gap-2 text-[14px] text-sand">
               <Check className="mt-1 h-3.5 w-3.5 shrink-0 text-signature" />
-              <span>Exclusivo para odontólogos matriculados de Argentina. <span className="text-mist">El envío corre por cuenta del profesional.</span></span>
+              <span>Exclusivo para odontólogos matriculados de Argentina.</span>
             </p>
           </div>
           <div className="lg:hidden">{bajada}</div>

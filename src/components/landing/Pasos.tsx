@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import { Reveal, ease } from "./shared";
 
 const PASOS = [
-  { n: "01", t: "Elegí tu muestra", d: "Seleccioná la concentración y completá tus datos." },
-  { n: "02", t: "Recibila", d: "Validamos tu matrícula y coordinamos el envío por WhatsApp. El envío corre por tu cuenta." },
-  { n: "03", t: "Probala en tu consultorio", d: "Usala según tu criterio profesional y documentá el antes y el después con guía de color." },
+  { n: "01", t: "Elegí tu muestra", d: "Seleccioná la concentración y completá tus datos: 2 jeringas sin cargo." },
+  { n: "02", t: "Retiralas o recibilas", d: "Validamos tu matrícula. Retiro sin cargo en nuestro local o envío a domicilio a tu cargo." },
+  { n: "03", t: "Probalas en tu consultorio", d: "Usala según tu criterio profesional y documentá el antes y el después con guía de color." },
   { n: "04", t: "Compartí tu caso", d: "Dentro de los 60 días de recibida la muestra. Y accedé al 20% off." },
 ];
 
@@ -40,9 +40,7 @@ export default function Pasos() {
           ))}
         </ol>
 
-        <p className="mt-12 max-w-[60em] text-[14px] leading-relaxed text-mist">
-          La muestra es una jeringa de 2 ml para que conozcas el producto: según el caso y el protocolo, puede no alcanzar para completar un tratamiento. No garantiza un resultado específico. Al solicitarla te comprometés a presentar tu caso clínico dentro de los 60 días de recibida.
-        </p>
+
       </div>
     </section>
   );

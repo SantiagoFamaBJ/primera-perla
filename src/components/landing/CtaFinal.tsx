@@ -23,7 +23,7 @@ export default function CtaFinal() {
           <h2 className="text-[46px] leading-[1.02] md:text-[84px]">
             Probalo con tu <em className="italic text-champagne">próximo paciente.</em>
           </h2>
-          <p className="text-[17px] text-sand md:text-[20px]">Muestra sin cargo, exclusiva para odontólogos matriculados. El envío corre por cuenta del profesional.</p>
+          <p className="text-[17px] text-sand md:text-[20px]">2 jeringas sin cargo para odontólogos matriculados de Argentina.</p>
           <CtaForm lugar="cta-final" className="btn btn-brand mt-2 w-full sm:w-auto sm:justify-self-start">
             Pedí tu muestra gratis <Arrow />
           </CtaForm>

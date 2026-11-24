@@ -7,7 +7,7 @@ import type { Estado } from "@/lib/data";
 import { LandingCtx } from "./shared";
 import Header from "./Header";
 import Hero from "./Hero";
-import Marquee from "./Marquee";
+import AccesoRapido from "./AccesoRapido";
 import Pasos from "./Pasos";
 import Concentraciones from "./Concentraciones";
 import Resultado from "./Resultado";
@@ -49,7 +49,7 @@ export default function Landing({ config, estadoInicial }: { config: Config; est
         <Header />
         <main>
           <Hero />
-          <Marquee />
+          <AccesoRapido />
           <Pasos />
           <Concentraciones />
           <Formulario onEstado={setEstado} onSeleccion={setSeleccion} />

@@ -74,6 +74,11 @@ function Inscripciones() {
     return c;
   }, [rows]);
 
+  const [stocks, setStocks] = useState<{ valor: string; stock: number }[]>([]);
+  useEffect(() => {
+    fetch("/api/admin/config", { cache: "no-store" }).then((r) => r.json()).then((j) => setStocks((j.config?.concentraciones || []).map((c: { valor: string; stock: number | string }) => ({ valor: c.valor, stock: Number(c.stock) || 0 }))));
+  }, []);
+
   const fmt = (iso: string) => new Date(iso).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "America/Buenos_Aires" });
 
   return (
@@ -82,7 +87,14 @@ function Inscripciones() {
         <div className="rounded-lg bg-black p-4 text-white"><p className="text-xs font-bold uppercase tracking-widest text-neutral-400">Confirmadas</p><p className="mt-1 text-3xl font-extrabold">{ocupan}</p></div>
         <div className="rounded-lg bg-white p-4"><p className="text-xs font-bold uppercase tracking-widest text-neutral-500">Pendientes</p><p className="mt-1 text-3xl font-extrabold text-[#f15922]">{conteo.pendiente || 0}</p></div>
         <div className="rounded-lg bg-white p-4"><p className="text-xs font-bold uppercase tracking-widest text-neutral-500">Incompletas</p><p className="mt-1 text-3xl font-extrabold">{conteo.parcial || 0}</p></div>
-        <div className="rounded-lg bg-white p-4"><p className="text-xs font-bold uppercase tracking-widest text-neutral-500">Por concentración</p><p className="mt-2 text-sm font-semibold">{Object.entries(porConc).map(([k, v]) => `${k}: ${v}`).join(" · ") || "—"}</p></div>
+        <div className="rounded-lg bg-white p-4"><p className="text-xs font-bold uppercase tracking-widest text-neutral-500">Stock usado</p>
+          <div className="mt-2 grid gap-0.5 text-sm font-semibold">
+            {stocks.length ? stocks.map((s) => {
+              const u = porConc[s.valor] || 0;
+              return <p key={s.valor} className={u >= s.stock ? "text-red-600" : ""}>{s.valor}: {u}/{s.stock}{u >= s.stock ? " · Agotado" : ""}</p>;
+            }) : <p>—</p>}
+          </div>
+        </div>
       </div>
 
       <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center">
@@ -126,7 +138,7 @@ function Inscripciones() {
                   <tr className="bg-neutral-50">
                     <td colSpan={8} className="p-4">
                       <div className="grid gap-x-8 gap-y-1.5 text-sm md:grid-cols-3">
-                        {[["Email", r.email], ["Domicilio", r.domicilio], ["CP", r.codigo_postal], ["Localidad", r.localidad], ["Especialidad", r.especialidad], ["Marca actual", r.marca_actual], ["Blanq./mes", r.blanqueamientos_mes], ["Autoriza publicar", r.acepta_publicacion ? "Sí" : "No"], ["Novedades", r.acepta_novedades ? "Sí" : "No"], ["Origen", [r.utm_source, r.utm_campaign, r.utm_content].filter(Boolean).join(" / ") || "—"], ["Anuncio (ad_id)", r.ad_id]].map(([k, v]) => (
+                        {[["Email", r.email], ["Entrega", r.entrega === "envio" ? "Envío (a su cargo)" : r.entrega === "retiro" ? "Retiro en local" : "—"], ["Domicilio", r.domicilio], ["CP", r.codigo_postal], ["Localidad", r.localidad], ["Especialidad", r.especialidad], ["Marca actual", r.marca_actual], ["Blanq./mes", r.blanqueamientos_mes], ["Autoriza publicar", r.acepta_publicacion ? "Sí" : "No"], ["Novedades", r.acepta_novedades ? "Sí" : "No"], ["Origen", [r.utm_source, r.utm_campaign, r.utm_content].filter(Boolean).join(" / ") || "—"], ["Anuncio (ad_id)", r.ad_id]].map(([k, v]) => (
                           <p key={String(k)}><span className="text-neutral-500">{k}:</span> {String(v ?? "—") || "—"}</p>
                         ))}
                       </div>
@@ -199,7 +211,7 @@ function F({ label, children, hint }: { label: string; children: React.ReactNode
   );
 }
 
-function Configuracion({ seccion }: { seccion: "general" | "contenido" | "productos" | "casos" | "faq" }) {
+function Configuracion({ seccion }: { seccion: "general" | "contenido" | "concentraciones" | "productos" | "casos" | "faq" }) {
   const [c, setC] = useState<Config | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [msg, setMsg] = useState("");
@@ -225,7 +237,7 @@ function Configuracion({ seccion }: { seccion: "general" | "contenido" | "produc
       {seccion === "general" && (
         <div className="grid gap-4 rounded-lg bg-white p-5 md:grid-cols-2">
           <F label="Nombre del programa" hint="Va arriba de todo, sobre «Densell White»."><input className={inputCls} value={c.programa} onChange={(e) => set("programa", e.target.value)} /></F>
-          <F label="Stock de jeringas" hint="No se muestra en la web. Al llegar a este número, el formulario se cierra solo."><input type="number" min={0} className={inputCls} value={c.cupo} onChange={(e) => set("cupo", Number(e.target.value))} /></F>
+          <F label="Lugar de retiro sin cargo"><input className={inputCls} value={c.retiroLugar} onChange={(e) => set("retiroLugar", e.target.value)} /></F>
           <F label="Cierre de inscripción (hora Argentina)"><input type="datetime-local" className={inputCls} value={cierreLocal} onChange={(e) => set("cierre", `${e.target.value}:59-03:00`)} /></F>
           <F label="Cerrar inscripción ahora" hint="Cierra el formulario aunque quede cupo o tiempo.">
             <label className="flex items-center gap-2 py-2"><input type="checkbox" checked={c.cerradoManual} onChange={(e) => set("cerradoManual", e.target.checked)} className="h-5 w-5 accent-[#f15922]" /> Cerrada</label>
@@ -254,12 +266,19 @@ function Configuracion({ seccion }: { seccion: "general" | "contenido" | "produc
             <F label="Monto mínimo del descuento extra"><input className={inputCls} value={c.descuentoExtraMinimo} onChange={(e) => set("descuentoExtraMinimo", e.target.value)} /></F>
             <F label="Características generales (franja debajo de las tarjetas)" hint="Una por línea. Vacío = no se muestra."><textarea className={inputCls} rows={5} value={c.caracteristicas.join("\n")} onChange={(e) => set("caracteristicas", e.target.value.split("\n").map((s) => s.trim()).filter(Boolean))} /></F>
           </div>
-          <h3 className="font-bold">Concentraciones</h3>
+        </div>
+      )}
+
+      {seccion === "concentraciones" && (
+        <div className="grid gap-4">
+          <p className="rounded-lg bg-white p-4 text-sm text-neutral-700">
+            <strong>Stock:</strong> cantidad de solicitudes disponibles por concentración (cada solicitud son 2 jeringas). Cuando las solicitudes confirmadas llegan a ese número, en la web esa concentración aparece tachada como <strong>Agotado</strong>. Las solicitudes rechazadas o incompletas no ocupan stock.
+          </p>
           <Lista
-            items={c.concentraciones}
-            vacio={{ valor: "", numero: "", nivel: "", descripcion: "", codigo: "", presentacion: "Jeringa de 2 ml", detalles: "" }}
-            campos={[{ k: "valor", label: "Valor (ej: CP 10%)" }, { k: "numero", label: "Número" }, { k: "nivel", label: "Uso (ej: Ambulatorio)" }, { k: "codigo", label: "Código" }, { k: "presentacion", label: "Presentación" }, { k: "descripcion", label: "Descripción" }, { k: "detalles", label: "Características (una por línea)", tipo: "textarea" }]}
-            onChange={(v) => set("concentraciones", v)}
+            items={c.concentraciones as unknown as Record<string, string>[]}
+            vacio={{ valor: "", numero: "", nivel: "", descripcion: "", codigo: "", presentacion: "2 jeringas de 2 ml", indicacion: "", protocolo: "", detalles: "", stock: "20" }}
+            campos={[{ k: "valor", label: "Valor (ej: CP 10%)" }, { k: "numero", label: "Número" }, { k: "stock", label: "Stock: solicitudes disponibles (cada una = 2 jeringas)" }, { k: "nivel", label: "Uso (ej: Ambulatorio)" }, { k: "codigo", label: "Código" }, { k: "presentacion", label: "Presentación" }, { k: "descripcion", label: "Descripción corta" }, { k: "indicacion", label: "Indicación", tipo: "textarea" }, { k: "protocolo", label: "Protocolo de referencia (vacío = según indicación profesional)", tipo: "textarea" }, { k: "detalles", label: "Formulación / características (una por línea)", tipo: "textarea" }]}
+            onChange={(v) => set("concentraciones", v as unknown as Config["concentraciones"])}
           />
         </div>
       )}
@@ -302,6 +321,7 @@ function Configuracion({ seccion }: { seccion: "general" | "contenido" | "produc
 const TABS = [
   { id: "inscripciones", label: "Inscripciones" },
   { id: "general", label: "Configuración" },
+  { id: "concentraciones", label: "Concentraciones y stock" },
   { id: "contenido", label: "Textos" },
   { id: "productos", label: "Productos" },
   { id: "casos", label: "Casos clínicos" },

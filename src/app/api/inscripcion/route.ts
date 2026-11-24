@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/supabase";
-import { calcularEstado, getConfig, getInscriptos } from "@/lib/data";
+import { calcularEstado, getConfig, getConteo, stockDe } from "@/lib/data";
 import { enviarLeadCapi } from "@/lib/capi";
 import { avisarNuevaSolicitud } from "@/lib/notificar";
 import { ESTADOS_QUE_CUENTAN } from "@/lib/types";
@@ -22,8 +22,10 @@ export async function POST(req: Request) {
   const config = await getConfig();
   if (!config.concentraciones.some((c) => c.valor === body.concentracion))
     return NextResponse.json({ ok: false, errores: { concentracion: "Elegí una de las concentraciones disponibles." } }, { status: 400 });
-  const estado = calcularEstado(config, await getInscriptos());
+  const estado = calcularEstado(config, await getConteo());
   if (!estado.abierto) return NextResponse.json({ ok: false, error: MSG_CERRADO, cerrado: true }, { status: 409 });
+  if (estado.agotadas.includes(body.concentracion))
+    return NextResponse.json({ ok: false, errores: { concentracion: "Esa concentración se agotó. Elegí otra." }, estado }, { status: 409 });
 
   const matricula_norm = normMatricula(body.matricula);
   const { data: dup } = await db()
@@ -85,18 +87,25 @@ export async function PATCH(req: Request) {
   const body = await req.json().catch(() => ({}));
   const id = txt(body.id, 60);
   const errores = validar(PASO2, body);
+  if (body.entrega !== "retiro" && body.entrega !== "envio") errores.entrega = "Elegí cómo querés recibir las jeringas.";
+  if (body.entrega === "envio") {
+    if (txt(body.domicilio).length < 5) errores.domicilio = "Escribí calle, número y, si corresponde, piso o consultorio.";
+    if (!/^[A-Za-z]?\d{4}[A-Za-z]{0,3}$/.test(txt(body.codigo_postal, 12).replace(/\s/g, ""))) errores.codigo_postal = "Escribí un código postal válido (ej: 1425 o C1425ABC).";
+  }
   if (!body.acepta_bases) errores.acepta_bases = "Tenés que aceptar las bases y el compromiso de presentar el caso.";
   if (!id) return NextResponse.json({ ok: false, error: "Falta completar el paso 1." }, { status: 400 });
   if (Object.keys(errores).length) return NextResponse.json({ ok: false, errores }, { status: 400 });
 
   const config = await getConfig();
-  const estado = calcularEstado(config, await getInscriptos());
+  const estado = calcularEstado(config, await getConteo());
   if (estado.motivo === "fecha" || estado.motivo === "manual")
     return NextResponse.json({ ok: false, error: MSG_CERRADO, cerrado: true }, { status: 409 });
 
+  const envio = body.entrega === "envio";
   const datos = {
-    domicilio: txt(body.domicilio),
-    codigo_postal: txt(body.codigo_postal, 12).toUpperCase(),
+    entrega: envio ? "envio" : "retiro",
+    domicilio: envio ? txt(body.domicilio) : "",
+    codigo_postal: envio ? txt(body.codigo_postal, 12).toUpperCase() : "",
     localidad: txt(body.localidad),
     provincia: txt(body.provincia),
     tipo_matricula: txt(body.tipo_matricula),
@@ -108,9 +117,12 @@ export async function PATCH(req: Request) {
     acepta_novedades: Boolean(body.acepta_novedades),
   };
 
-  const { data, error } = await db().rpc("pp_confirmar", { p_id: id, p_datos: datos, p_cupo: config.cupo });
+  // Stock de la concentración elegida en el paso 1 (la función cuenta solo esa concentración)
+  const { data: previo } = await db().from("pp_inscripciones").select("concentracion").eq("id", id).maybeSingle();
+  const conc = config.concentraciones.find((c) => c.valor === previo?.concentracion);
+  const { data, error } = await db().rpc("pp_confirmar", { p_id: id, p_datos: datos, p_cupo: conc ? stockDe(conc.stock) : 0 });
   if (error) return NextResponse.json({ ok: false, error: "No pudimos confirmar tu solicitud. Probá de nuevo." }, { status: 500 });
-  if (data === "cupo") return NextResponse.json({ ok: false, error: "Se agotó el stock disponible para el programa. Gracias por tu interés.", cerrado: true }, { status: 409 });
+  if (data === "cupo") return NextResponse.json({ ok: false, error: "Se agotó la concentración que elegiste. Volvé al paso 1 y elegí otra.", agotada: true }, { status: 409 });
   if (data === "duplicada") return NextResponse.json({ ok: false, error: "Esta matrícula ya tiene una solicitud." }, { status: 409 });
   if (data !== "ok") return NextResponse.json({ ok: false, error: "No encontramos tu solicitud. Volvé a empezar." }, { status: 404 });
 

@@ -3,14 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Estado } from "@/lib/data";
-import { ESPECIALIDADES, MARCAS, PASO1, PASO2, PROVINCIAS, TIPOS_MATRICULA, VOLUMENES, validar } from "@/lib/validate";
+import { ESPECIALIDADES, MARCAS, PASO1, PASO2, PASO2_ENVIO, PROVINCIAS, TIPOS_MATRICULA, VOLUMENES, validar } from "@/lib/validate";
 import { leerUtm } from "./Pixel";
 import { Arrow, Check as CheckIcon, External, WaIcon, WebLink, ease, fechaLarga, track, useLanding, waLink } from "./shared";
 
 type Datos = Record<string, string | boolean>;
 const INICIAL: Datos = {
   concentracion: "", nombre: "", matricula: "", whatsapp: "", email: "", acepta_datos: false,
-  domicilio: "", codigo_postal: "", localidad: "", provincia: "", tipo_matricula: "", especialidad: "",
+  entrega: "", domicilio: "", codigo_postal: "", localidad: "", provincia: "", tipo_matricula: "", especialidad: "",
   marca_actual: "", blanqueamientos_mes: "", acepta_bases: false, acepta_publicacion: false, acepta_novedades: false,
 };
 const LS_OK = "pp_solicitud_ok";
@@ -78,14 +78,14 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
   const [alerta, setAlerta] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [id, setId] = useState("");
-  const [listo, setListo] = useState<{ nombre: string; concentracion: string } | null>(null);
+  const [listo, setListo] = useState<{ nombre: string; concentracion: string; entrega?: string } | null>(null);
   const bloqueo = useRef(false);
   const iniciado = useRef(false);
   const sectionRef = useRef<HTMLElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
   // La concentración elegida en las tarjetas llega acá
-  useEffect(() => { if (seleccion) setD((p) => ({ ...p, concentracion: seleccion })); }, [seleccion]);
+  useEffect(() => { if (seleccion && !estado.agotadas.includes(seleccion)) setD((p) => ({ ...p, concentracion: seleccion })); }, [seleccion, estado.agotadas]);
 
   // Retoma: solicitud ya enviada en este navegador, o paso 2 a medio completar
   useEffect(() => {
@@ -153,7 +153,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
       if (!j.ok) {
         if (j.errores) { setErr(j.errores); enfocarError(j.errores); }
         else setAlerta(j.error || "No pudimos enviar tus datos.");
-        if (j.cerrado) refrescarCupo();
+        if (j.cerrado || j.estado) refrescarCupo();
         return;
       }
       setId(j.id);
@@ -170,7 +170,8 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
     ev.preventDefault();
     if (bloqueo.current) return;
     setAlerta("");
-    const e = validar(PASO2, d);
+    const e = { ...validar(PASO2, d), ...(d.entrega === "envio" ? validar(PASO2_ENVIO, d) : {}) };
+    if (d.entrega !== "retiro" && d.entrega !== "envio") e.entrega = "Elegí cómo querés recibir las jeringas.";
     if (!d.acepta_bases) e.acepta_bases = "Tenés que aceptar las bases y el compromiso de presentar el caso.";
     setErr(e);
     if (Object.keys(e).length) { enfocarError(e); return; }
@@ -181,12 +182,13 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
       if (!j.ok) {
         if (j.errores) { setErr(j.errores); enfocarError(j.errores); }
         else setAlerta(j.error || "No pudimos confirmar tu solicitud.");
-        if (j.cerrado) refrescarCupo();
+        if (j.cerrado || j.agotada) refrescarCupo();
+        if (j.agotada) { setD((p) => ({ ...p, concentracion: "" })); setPaso(1); }
         return;
       }
       // Lead SOLO cuando la solicitud quedó guardada. Mismo eventID que la Conversions API.
       track("Lead", { content_name: "Muestra Densell White", content_category: String(d.concentracion) }, { eventId: j.eventId, ga: "generate_lead" });
-      const ok = { nombre: String(d.nombre).trim().split(/\s+/)[0] || "", concentracion: String(d.concentracion) };
+      const ok = { nombre: String(d.nombre).trim().split(/\s+/)[0] || "", concentracion: String(d.concentracion), entrega: String(d.entrega) };
       sessionStorage.removeItem("pp_form");
       try { localStorage.setItem(LS_OK, JSON.stringify(ok)); } catch {}
       setListo(ok);
@@ -205,7 +207,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
 
   const nombre = String(d.nombre).trim().split(/\s+/)[0] || "";
   const cerrado = !estado.abierto && paso !== 3;
-  const Nota = () => <p className="mt-4 text-center text-[14px] text-mist">Sin compra obligatoria. Una muestra por matrícula, sujeta a validación y disponibilidad.</p>;
+  const Nota = () => <p className="mt-4 text-center text-[14px] text-mist">Sin compra obligatoria. Una solicitud por matrícula, sujeta a validación y disponibilidad.</p>;
 
   return (
     <section ref={sectionRef} id="formulario" className="py-24 md:py-32">
@@ -220,9 +222,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
           <ul className="grid gap-2.5 text-[16px] text-sand">
             {[
               "Para odontólogos con matrícula vigente en Argentina",
-              "Una muestra por matrícula, sujeta a validación",
-              config.plazoEnvio ? `Muestra sin cargo. El envío corre por tu cuenta · ${config.plazoEnvio}` : "Muestra sin cargo. El envío corre por tu cuenta",
-              "Requiere presentar tu caso clínico dentro de los 60 días",
+              "Una solicitud por matrícula, sujeta a validación",
               `Hasta el ${fechaLarga(config.cierre)} o hasta agotar stock`,
             ].map((t) => (
               <li key={t} className="flex gap-3"><CheckIcon className="mt-1.5 h-3.5 w-3.5 shrink-0 text-signature" /> {t}</li>
@@ -230,7 +230,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
           </ul>
           <div className="flex items-center gap-4 rounded-2xl border border-line-dark p-4">
             <img src="/img/dm-blanco.webp" alt="Dental Medrano" width={640} height={171} className="h-8 w-auto" loading="lazy" />
-            <p className="text-[14px] leading-snug text-mist">Programa organizado por <strong className="font-medium text-pearl">Dental Medrano</strong> · Professional Center, Marcelo T. de Alvear 2063, CABA</p>
+            <p className="text-[14px] leading-snug text-mist">Programa organizado por <strong className="font-medium text-pearl">Dental Medrano</strong> · {config.retiroLugar}</p>
           </div>
         </aside>
 
@@ -250,7 +250,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
                 <div className="mb-7" aria-label={`Paso ${paso} de 2`}>
                   <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-[0.2em]">
                     <span className={paso === 1 ? "text-champagne" : "text-mist"}>1 · Datos profesionales</span>
-                    <span className={paso === 2 ? "text-champagne" : "text-mist"}>2 · Envío</span>
+                    <span className={paso === 2 ? "text-champagne" : "text-mist"}>2 · Entrega</span>
                   </div>
                   <div className="mt-3 h-[2px] overflow-hidden rounded-full bg-line-dark">
                     <motion.div className="h-full bg-signature" animate={{ width: paso === 1 ? "50%" : "100%" }} transition={{ duration: 0.5, ease }} />
@@ -259,12 +259,15 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
               )}
 
               {paso !== 3 && (
-                <div className="mb-7 flex gap-3 rounded-2xl border border-champagne/35 bg-champagne/[.07] p-4">
-                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-champagne text-[13px] font-medium text-onyx">!</span>
-                  <p className="text-[15px] leading-relaxed text-sand">
-                    <strong className="font-medium text-pearl">La muestra forma parte de un programa de casos clínicos.</strong> Al recibirla, te comprometés a presentar tu caso en forma privada dentro de los 60 días. Publicarlo es opcional.{" "}
-                    <button type="button" onClick={abrirBases} className="text-champagne underline underline-offset-4">Ver bases</button>
-                  </p>
+                <div className="mb-7 rounded-2xl border border-champagne/35 bg-champagne/[.06] p-4 md:p-5">
+                  <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-champagne">Lo esencial</p>
+                  <ul className="mt-3 grid gap-2 text-[15px] leading-snug text-sand">
+                    <li className="flex gap-2.5"><CheckIcon className="mt-1 h-3.5 w-3.5 shrink-0 text-signature" /><span><strong className="font-medium text-pearl">2 jeringas sin cargo</strong> de la concentración que elijas.</span></li>
+                    <li className="flex gap-2.5"><CheckIcon className="mt-1 h-3.5 w-3.5 shrink-0 text-signature" /><span><strong className="font-medium text-pearl">Retiro sin cargo</strong> en nuestro local, o envío a domicilio <strong className="font-medium text-pearl">a tu cargo</strong>.</span></li>
+                    <li className="flex gap-2.5"><CheckIcon className="mt-1 h-3.5 w-3.5 shrink-0 text-signature" /><span>Te comprometés a presentar tu caso <strong className="font-medium text-pearl">en forma privada dentro de los 60 días</strong>. Publicarlo es opcional.</span></li>
+                    <li className="flex gap-2.5"><CheckIcon className="mt-1 h-3.5 w-3.5 shrink-0 text-signature" /><span>Al presentarlo, recibís un <strong className="font-medium text-pearl">20% off</strong> en Densell White.</span></li>
+                  </ul>
+                  <button type="button" onClick={abrirBases} className="mt-3 text-[14px] text-champagne underline underline-offset-4">Ver bases y condiciones</button>
                 </div>
               )}
 
@@ -278,11 +281,12 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
                       <div className={`grid gap-3 ${config.concentraciones.length >= 3 ? "grid-cols-3" : "grid-cols-2"}`} role="radiogroup">
                         {config.concentraciones.map((c, i) => {
                           const on = d.concentracion === c.valor;
+                          const agotada = estado.agotadas.includes(c.valor);
                           return (
-                            <label key={c.valor} className={`relative cursor-pointer rounded-2xl border px-2 py-4 text-center transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-champagne ${on ? "border-champagne bg-champagne/10" : "border-line-dark hover:border-[#5a534a]"}`}>
-                              <input id={`conc-${i}`} type="radio" name="concentracion" value={c.valor} checked={on} onChange={() => { set("concentracion")(c.valor); track("SeleccionConcentracion", { concentracion: c.valor, lugar: "formulario" }, { custom: true, ga: "select_concentracion" }); }} className="sr-only" />
-                              <span className="block font-display text-[42px] leading-none">{c.numero}<span className="text-[0.5em]">%</span></span>
-                              <span className="mt-1.5 block text-[10px] font-medium uppercase leading-tight tracking-[0.16em] text-mist">{c.nivel}</span>
+                            <label key={c.valor} className={`relative rounded-2xl border px-2 py-4 text-center transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-champagne ${agotada ? "cursor-not-allowed border-line-dark opacity-55" : on ? "cursor-pointer border-champagne bg-champagne/10" : "cursor-pointer border-line-dark hover:border-[#5a534a]"}`}>
+                              <input id={`conc-${i}`} type="radio" name="concentracion" value={c.valor} checked={on} disabled={agotada} onChange={() => { set("concentracion")(c.valor); track("SeleccionConcentracion", { concentracion: c.valor, lugar: "formulario" }, { custom: true, ga: "select_concentracion" }); }} className="sr-only" />
+                              <span className={`block font-display text-[42px] leading-none ${agotada ? "text-mist line-through" : ""}`}>{c.numero}<span className="text-[0.5em]">%</span></span>
+                              <span className={`mt-1.5 block text-[10px] font-medium uppercase leading-tight tracking-[0.16em] ${agotada ? "text-danger" : "text-mist"}`}>{agotada ? "Agotado" : c.nivel}</span>
                               {on && <span className="absolute right-2 top-2 grid h-4 w-4 place-items-center rounded-full bg-champagne text-onyx"><CheckIcon className="h-2.5 w-2.5" /></span>}
                             </label>
                           );
@@ -321,21 +325,44 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
 
                 {paso === 2 && (
                   <motion.form key="p2" noValidate onSubmit={enviarPaso2} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.25 }}>
-                    <p className="mb-6 text-[16px] text-sand">
-                      {nombre ? `${nombre}, ` : ""}¿a dónde te enviamos tu muestra de <strong className="font-medium text-pearl">Densell White {String(d.concentracion)}</strong>?
-                      <span className="mt-1.5 block text-[14px] text-mist">El costo del envío corre por tu cuenta; lo coordinamos por WhatsApp.{config.plazoEnvio ? ` ${config.plazoEnvio}` : ""}</span>
-                    </p>
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      <Campo id="domicilio" label="Domicilio de entrega" error={err.domicilio} hint="Calle, número y, si corresponde, piso o consultorio." full>
-                        <input {...inp("domicilio", { autoComplete: "street-address", enterKeyHint: "next" })} />
-                      </Campo>
-                      <Campo id="codigo_postal" label="Código postal" error={err.codigo_postal}>
-                        <input {...inp("codigo_postal", { autoComplete: "postal-code", autoCapitalize: "characters", enterKeyHint: "next", placeholder: "1425" })} />
-                      </Campo>
-                      <Campo id="localidad" label="Localidad" error={err.localidad}>
+                    <fieldset aria-describedby={err.entrega ? "entrega-err" : undefined}>
+                      <legend className="mb-3 text-[16px] text-sand">
+                        {nombre ? `${nombre}, ` : ""}¿cómo querés recibir tus 2 jeringas de <strong className="font-medium text-pearl">Densell White {String(d.concentracion)}</strong>? <span className="text-signature">*</span>
+                      </legend>
+                      <div className="grid gap-3 sm:grid-cols-2" role="radiogroup">
+                        {[
+                          { v: "retiro", t: "Retiro sin cargo", s: `En ${config.retiroLugar}. Coordinamos el día por WhatsApp.` },
+                          { v: "envio", t: "Envío a domicilio", s: `El costo del envío corre por tu cuenta. Lo coordinamos por WhatsApp.${config.plazoEnvio ? ` ${config.plazoEnvio}` : ""}` },
+                        ].map((o, k) => {
+                          const on = d.entrega === o.v;
+                          return (
+                            <label key={o.v} className={`relative flex cursor-pointer flex-col rounded-2xl border p-4 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-champagne ${on ? "border-champagne bg-champagne/10" : err.entrega ? "border-danger" : "border-line-dark hover:border-[#5a534a]"}`}>
+                              <input id={k === 0 ? "entrega" : undefined} type="radio" name="entrega" value={o.v} checked={on} onChange={() => set("entrega")(o.v)} className="sr-only" />
+                              <span className="font-display text-[24px] leading-tight">{o.t}</span>
+                              <span className="mt-1 text-[14px] leading-snug text-mist">{o.s}</span>
+                              {on && <span className="absolute right-3 top-3 grid h-5 w-5 place-items-center rounded-full bg-champagne text-onyx"><CheckIcon className="h-3 w-3" /></span>}
+                            </label>
+                          );
+                        })}
+                      </div>
+                      {err.entrega && <p id="entrega-err" className="mt-2 text-[14px] text-danger">{err.entrega}</p>}
+                    </fieldset>
+
+                    <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                      {d.entrega === "envio" && (
+                        <>
+                          <Campo id="domicilio" label="Domicilio de entrega" error={err.domicilio} hint="Calle, número y, si corresponde, piso o consultorio." full>
+                            <input {...inp("domicilio", { autoComplete: "street-address", enterKeyHint: "next" })} />
+                          </Campo>
+                          <Campo id="codigo_postal" label="Código postal" error={err.codigo_postal}>
+                            <input {...inp("codigo_postal", { autoComplete: "postal-code", autoCapitalize: "characters", enterKeyHint: "next", placeholder: "1425" })} />
+                          </Campo>
+                        </>
+                      )}
+                      <Campo id="localidad" label="Localidad donde atendés" error={err.localidad}>
                         <input {...inp("localidad", { autoComplete: "address-level2", enterKeyHint: "next" })} />
                       </Campo>
-                      <Campo id="provincia" label="Provincia" error={err.provincia} full>
+                      <Campo id="provincia" label="Provincia" error={err.provincia} full={d.entrega === "envio"}>
                         <Select id="provincia" value={String(d.provincia)} onChange={set("provincia")} opciones={PROVINCIAS} placeholder="Elegí una provincia" invalid={Boolean(err.provincia)} />
                       </Campo>
                     </div>
@@ -382,14 +409,28 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
                       <h3 className="mt-5 text-[40px] leading-tight md:text-[46px]">Gracias{listo.nombre ? `, ${listo.nombre}` : ""}.</h3>
                       <p className="mt-2 text-sand">Recibimos tu solicitud.</p>
                     </div>
-                    <div className="mx-auto mt-6 max-w-[34em] rounded-2xl border border-line-dark p-5">
+                    <div className="mx-auto mt-6 max-w-[36em] rounded-2xl border border-line-dark p-5 md:p-6">
                       <p className="eyebrow">Resumen</p>
-                      <p className="mt-2 font-display text-[26px]">Muestra Densell White {listo.concentracion}</p>
-                      <ul className="mt-3 grid gap-2 text-[15px] text-sand">
-                        <li className="flex gap-2.5"><CheckIcon className="mt-1.5 h-3.5 w-3.5 shrink-0 text-signature" /> Vamos a verificar tu matrícula.</li>
-                        <li className="flex gap-2.5"><CheckIcon className="mt-1.5 h-3.5 w-3.5 shrink-0 text-signature" /> La entrega está sujeta a validación y disponibilidad.</li>
-                        <li className="flex gap-2.5"><CheckIcon className="mt-1.5 h-3.5 w-3.5 shrink-0 text-signature" /> Te escribimos por WhatsApp para coordinar el envío, que corre por tu cuenta.</li>
-                      </ul>
+                      <dl className="mt-3 grid gap-3 text-[15px]">
+                        <div className="flex justify-between gap-4 border-b border-line-dark pb-3"><dt className="text-mist">Concentración</dt><dd className="font-display text-[22px] leading-none text-pearl">Densell White {listo.concentracion}</dd></div>
+                        <div className="flex justify-between gap-4 border-b border-line-dark pb-3"><dt className="text-mist">Cantidad</dt><dd className="text-pearl">2 jeringas de 2 ml, sin cargo</dd></div>
+                        <div className="flex justify-between gap-4"><dt className="text-mist">Entrega</dt><dd className="text-right text-pearl">{listo.entrega === "envio" ? "Envío a domicilio, a tu cargo" : `Retiro sin cargo en ${config.retiroLugar}`}</dd></div>
+                      </dl>
+                    </div>
+
+                    <div className="mx-auto mt-5 max-w-[36em] rounded-2xl border border-line-dark p-5 md:p-6">
+                      <p className="eyebrow">Próximos pasos</p>
+                      <ol className="mt-3 grid gap-3 text-[15px] leading-snug text-sand">
+                        {[
+                          "Verificamos tu matrícula.",
+                          listo.entrega === "envio" ? "Te escribimos por WhatsApp para coordinar el envío y su costo." : "Te escribimos por WhatsApp para coordinar el retiro.",
+                          "Usás las jeringas con tu paciente y documentás el antes y el después con guía de color.",
+                          "Nos enviás tu caso dentro de los 60 días de recibidas y te mandamos el 20% off.",
+                        ].map((t, i) => (
+                          <li key={t} className="flex gap-3"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-champagne font-display text-[14px] text-champagne">{i + 1}</span><span className="pt-0.5">{t}</span></li>
+                        ))}
+                      </ol>
+                      <p className="mt-4 rounded-xl bg-onyx px-4 py-3 text-[14px] text-mist">Tu solicitud queda sujeta a validación de matrícula y a disponibilidad de stock. Todavía no está aprobada.</p>
                     </div>
 
                     <div className="mt-8 border-t border-line-dark pt-6">

@@ -13,25 +13,34 @@ export async function getConfig(): Promise<Config> {
   }
 }
 
-export async function getInscriptos(): Promise<number> {
+/** Solicitudes que ocupan stock, por concentración ("CP 10%" → 7). */
+export async function getConteo(): Promise<Record<string, number>> {
   try {
-    const { count } = await db()
+    const { data } = await db()
       .from("pp_inscripciones")
-      .select("id", { count: "exact", head: true })
-      .in("estado", ESTADOS_QUE_CUENTAN as unknown as string[]);
-    return count ?? 0;
+      .select("concentracion")
+      .in("estado", ESTADOS_QUE_CUENTAN as unknown as string[])
+      .limit(5000);
+    const c: Record<string, number> = {};
+    for (const r of data ?? []) c[r.concentracion] = (c[r.concentracion] || 0) + 1;
+    return c;
   } catch {
-    return 0;
+    return {};
   }
 }
 
-export type Estado = { cupo: number; inscriptos: number; restantes: number; abierto: boolean; motivo: "" | "cupo" | "fecha" | "manual" };
+export const stockDe = (v: number | string | undefined) => {
+  const n = Number(v);
+  return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
+};
 
-export function calcularEstado(config: Config, inscriptos: number): Estado {
-  const restantes = Math.max(0, config.cupo - inscriptos);
+export type Estado = { abierto: boolean; motivo: "" | "cupo" | "fecha" | "manual"; agotadas: string[] };
+
+export function calcularEstado(config: Config, conteo: Record<string, number>): Estado {
+  const agotadas = config.concentraciones.filter((c) => (conteo[c.valor] || 0) >= stockDe(c.stock)).map((c) => c.valor);
   let motivo: Estado["motivo"] = "";
   if (config.cerradoManual) motivo = "manual";
   else if (Date.now() > new Date(config.cierre).getTime()) motivo = "fecha";
-  else if (restantes <= 0) motivo = "cupo";
-  return { cupo: config.cupo, inscriptos, restantes, abierto: motivo === "", motivo };
+  else if (agotadas.length >= config.concentraciones.length) motivo = "cupo";
+  return { abierto: motivo === "", motivo, agotadas };
 }

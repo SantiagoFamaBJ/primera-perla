@@ -8,7 +8,7 @@ const COLS: [string, string][] = [
   ["created_at", "Fecha"], ["estado", "Estado"], ["nombre", "Nombre"], ["matricula", "Matrícula"],
   ["tipo_matricula", "Tipo matrícula"], ["provincia_matricula", "Provincia matrícula"], ["especialidad", "Especialidad"],
   ["concentracion", "Concentración"], ["whatsapp", "WhatsApp"], ["email", "Email"],
-  ["domicilio", "Domicilio"], ["codigo_postal", "CP"], ["localidad", "Localidad"], ["provincia", "Provincia"],
+  ["entrega", "Entrega"], ["domicilio", "Domicilio"], ["codigo_postal", "CP"], ["localidad", "Localidad"], ["provincia", "Provincia"],
   ["marca_actual", "Marca actual"], ["blanqueamientos_mes", "Blanqueamientos/mes"],
   ["acepta_publicacion", "Autoriza publicación"], ["acepta_novedades", "Acepta novedades"],
   ["aprobada_at", "Aprobada"], ["rechazada_at", "Rechazada"], ["enviada_at", "Enviada"], ["entregada_at", "Entregada"], ["caso_recibido_at", "Caso recibido"],

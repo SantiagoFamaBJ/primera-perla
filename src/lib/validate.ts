@@ -24,14 +24,17 @@ export const PASO1: Record<string, Check> = {
 };
 
 export const PASO2: Record<string, Check> = {
-  domicilio: (v) => ((v || "").trim().length >= 5 ? null : "Escribí calle, número y, si corresponde, piso o consultorio."),
-  codigo_postal: (v) => (/^[A-Za-z]?\d{4}[A-Za-z]{0,3}$/.test((v || "").replace(/\s/g, "")) ? null : "Escribí un código postal válido (ej: 1425 o C1425ABC)."),
   localidad: req("Escribí tu localidad."),
   provincia: req("Elegí tu provincia."),
   tipo_matricula: req("Elegí el tipo de matrícula."),
   especialidad: req("Elegí tu especialidad."),
   marca_actual: req("Elegí una opción."),
   blanqueamientos_mes: req("Elegí una opción."),
+};
+
+export const PASO2_ENVIO: Record<string, Check> = {
+  domicilio: (v) => ((v || "").trim().length >= 5 ? null : "Escribí calle, número y, si corresponde, piso o consultorio."),
+  codigo_postal: (v) => (/^[A-Za-z]?\d{4}[A-Za-z]{0,3}$/.test((v || "").replace(/\s/g, "")) ? null : "Escribí un código postal válido (ej: 1425 o C1425ABC)."),
 };
 
 export function validar(reglas: Record<string, Check>, data: Record<string, unknown>) {
