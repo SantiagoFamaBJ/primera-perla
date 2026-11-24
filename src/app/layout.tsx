@@ -12,10 +12,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Muestra gratis de Densell White para odontólogos | Dental Medrano",
   description:
-    "Pedí una jeringa de Densell White sin cargo (CP 10, 16 o 22%). Exclusivo para odontólogos matriculados de Argentina. Programa de casos clínicos de Dental Medrano.",
+    "Pedí 2 jeringas de Densell White sin cargo (CP 10, 16 o 22%). Exclusivo para odontólogos matriculados de Argentina. Programa de casos clínicos de Dental Medrano.",
   openGraph: {
     title: "Probá Densell White gratis en tu consultorio",
-    description: "Muestra sin cargo. Exclusivo para odontólogos matriculados de Argentina.",
+    description: "2 jeringas sin cargo. Exclusivo para odontólogos matriculados de Argentina.",
     images: ["/img/jeringa.png"],
     locale: "es_AR",
     type: "website",
