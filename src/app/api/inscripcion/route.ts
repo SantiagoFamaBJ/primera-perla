@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/supabase";
 import { calcularEstado, getConfig, getInscriptos } from "@/lib/data";
 import { enviarLeadCapi } from "@/lib/capi";
+import { avisarNuevaSolicitud } from "@/lib/notificar";
 import { ESTADOS_QUE_CUENTAN } from "@/lib/types";
 import { PASO1, PASO2, normMatricula, normWhatsapp, validar } from "@/lib/validate";
 
@@ -19,6 +20,8 @@ export async function POST(req: Request) {
   if (Object.keys(errores).length) return NextResponse.json({ ok: false, errores }, { status: 400 });
 
   const config = await getConfig();
+  if (!config.concentraciones.some((c) => c.valor === body.concentracion))
+    return NextResponse.json({ ok: false, errores: { concentracion: "Elegí una de las concentraciones disponibles." } }, { status: 400 });
   const estado = calcularEstado(config, await getInscriptos());
   if (!estado.abierto) return NextResponse.json({ ok: false, error: MSG_CERRADO, cerrado: true }, { status: 409 });
 
@@ -111,7 +114,7 @@ export async function PATCH(req: Request) {
   if (data === "duplicada") return NextResponse.json({ ok: false, error: "Esta matrícula ya tiene una solicitud." }, { status: 409 });
   if (data !== "ok") return NextResponse.json({ ok: false, error: "No encontramos tu solicitud. Volvé a empezar." }, { status: 404 });
 
-  const { data: fila } = await db().from("pp_inscripciones").select("fbp, fbc, landing_url, concentracion").eq("id", id).single();
+  const { data: fila } = await db().from("pp_inscripciones").select("*").eq("id", id).single();
   await enviarLeadCapi({
     eventId: `lead-${id}`,
     url: fila?.landing_url || req.headers.get("referer") || "",
@@ -121,6 +124,8 @@ export async function PATCH(req: Request) {
     fbc: fila?.fbc,
     concentracion: fila?.concentracion,
   });
+
+  if (fila) await avisarNuevaSolicitud(fila, req.headers.get("origin") || fila.landing_url || "https://primera-perla.vercel.app");
 
   return NextResponse.json({ ok: true, eventId: `lead-${id}` });
 }

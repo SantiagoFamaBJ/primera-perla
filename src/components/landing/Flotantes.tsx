@@ -48,7 +48,7 @@ export default function Flotantes() {
         {visible && (
           <motion.div
             initial={{ y: 90 }} animate={{ y: 0 }} exit={{ y: 90 }} transition={{ duration: 0.25 }}
-            className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white/95 px-4 pb-[max(10px,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur md:hidden"
+            className="fixed inset-x-0 bottom-0 z-30 border-t border-line-dark bg-onyx/90 px-4 pb-[max(10px,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur-md md:hidden"
           >
             <CtaForm lugar="sticky-mobile" className="btn btn-brand w-full !min-h-[50px]">
               Pedí tu muestra gratis <Arrow />

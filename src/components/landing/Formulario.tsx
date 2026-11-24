@@ -18,12 +18,12 @@ const LS_OK = "pp_solicitud_ok";
 function Campo({ id, label, error, opcional, hint, full, children }: { id: string; label: string; error?: string; opcional?: boolean; hint?: string; full?: boolean; children: React.ReactNode }) {
   return (
     <div className={`flex flex-col gap-1.5 ${full ? "sm:col-span-2" : ""}`}>
-      <label htmlFor={id} className="text-[14px] font-bold">
-        {label} {opcional ? <span className="font-medium text-mute">(opcional)</span> : <span className="text-brand">*</span>}
+      <label htmlFor={id} className="text-[15px] font-medium text-pearl">
+        {label} {opcional ? <span className="text-[12px] tracking-[0.08em] text-mist">(opcional)</span> : <span className="text-signature">*</span>}
       </label>
       {children}
-      {hint && !error && <p className="text-[13px] text-mute">{hint}</p>}
-      {error && <p id={`${id}-err`} className="text-[13px] font-semibold text-danger">{error}</p>}
+      {hint && !error && <p className="text-[14px] text-mist">{hint}</p>}
+      {error && <p id={`${id}-err`} className="text-[14px] text-danger">{error}</p>}
     </div>
   );
 }
@@ -41,19 +41,19 @@ function Select({ id, value, onChange, opciones, placeholder, invalid }: { id: s
 function Chips({ id, label, value, onChange, opciones, error }: { id: string; label: string; value: string; onChange: (v: string) => void; opciones: string[]; error?: string }) {
   return (
     <fieldset className="sm:col-span-2" aria-describedby={error ? `${id}-err` : undefined}>
-      <legend className="mb-2 text-[14px] font-bold">{label} <span className="text-brand">*</span></legend>
+      <legend className="mb-2 text-[15px] font-medium text-pearl">{label} <span className="text-signature">*</span></legend>
       <div className="flex flex-wrap gap-2" role="radiogroup">
         {opciones.map((o, i) => {
           const on = value === o;
           return (
-            <label key={o} className={`inline-flex min-h-[44px] cursor-pointer items-center rounded-full border px-4 text-[14px] font-semibold transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand ${on ? "border-brand bg-brand text-white" : error ? "border-danger bg-white text-ink" : "border-[#cfccc6] bg-white text-ink hover:border-ink"}`}>
+            <label key={o} className={`inline-flex min-h-[44px] cursor-pointer items-center rounded-full border px-4 text-[14px] transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-champagne ${on ? "border-champagne bg-champagne/15 text-pearl" : error ? "border-danger text-sand" : "border-line-dark text-sand hover:border-[#5a534a]"}`}>
               <input id={i === 0 ? id : undefined} type="radio" name={id} value={o} checked={on} onChange={() => onChange(o)} className="sr-only" />
               {o}
             </label>
           );
         })}
       </div>
-      {error && <p id={`${id}-err`} className="mt-1.5 text-[13px] font-semibold text-danger">{error}</p>}
+      {error && <p id={`${id}-err`} className="mt-1.5 text-[14px] text-danger">{error}</p>}
     </fieldset>
   );
 }
@@ -61,11 +61,11 @@ function Chips({ id, label, value, onChange, opciones, error }: { id: string; la
 function Casilla({ id, checked, onChange, error, children }: { id: string; checked: boolean; onChange: (v: boolean) => void; error?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label htmlFor={id} className="flex cursor-pointer gap-3 text-[14px] leading-relaxed text-soft">
-        <input id={id} type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-0.5 h-5 w-5 shrink-0 accent-[#f15922]" aria-invalid={Boolean(error)} />
+      <label htmlFor={id} className="flex cursor-pointer gap-3 text-[15px] leading-relaxed text-sand">
+        <input id={id} type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-1 h-5 w-5 shrink-0 accent-[#c8b68e]" aria-invalid={Boolean(error)} />
         <span>{children}</span>
       </label>
-      {error && <p className="mt-1 pl-8 text-[13px] font-semibold text-danger">{error}</p>}
+      {error && <p className="mt-1 pl-8 text-[14px] text-danger">{error}</p>}
     </div>
   );
 }
@@ -205,89 +205,90 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
 
   const nombre = String(d.nombre).trim().split(/\s+/)[0] || "";
   const cerrado = !estado.abierto && paso !== 3;
-  const Nota = () => <p className="mt-3 text-center text-[13px] text-mute">Sin compra obligatoria. Una muestra por matrícula, sujeta a validación y disponibilidad.</p>;
+  const Nota = () => <p className="mt-4 text-center text-[14px] text-mist">Sin compra obligatoria. Una muestra por matrícula, sujeta a validación y disponibilidad.</p>;
 
   return (
-    <section ref={sectionRef} id="formulario" className="bg-surface py-20 md:py-28">
-      <div className="mx-auto grid max-w-[1200px] items-start gap-10 px-5 md:px-8 lg:grid-cols-[.8fr_1.2fr] lg:gap-14">
-        <aside className="order-last flex flex-col gap-5 lg:order-none lg:sticky lg:top-28">
-          <p className="eyebrow">Solicitud</p>
-          <h2 className="text-4xl md:text-6xl font-extrabold tracking-[-0.03em] leading-[1.02]">
-            Pedí tu <span className="text-brand">muestra gratis.</span>
+    <section ref={sectionRef} id="formulario" className="py-24 md:py-32">
+      <div className="mx-auto grid max-w-[1200px] items-start gap-12 px-5 md:px-8 lg:grid-cols-[.8fr_1.2fr] lg:gap-16">
+        <aside className="order-last flex flex-col gap-6 lg:order-none lg:sticky lg:top-28">
+          <p className="eyebrow">Inscripción</p>
+          <h2 className="text-[46px] leading-[1.02] md:text-[76px]">
+            Pedí <em className="italic text-champagne">tu muestra.</em>
           </h2>
-          <p className="text-[16px] md:text-lg text-soft">Dos pasos, menos de 2 minutos.</p>
-          <ul className="grid gap-2.5 text-[15px] text-ink">
+          <hr className="rule" />
+          <p className="text-[17px] text-sand md:text-[20px]">Dos pasos, menos de 2 minutos.</p>
+          <ul className="grid gap-2.5 text-[16px] text-sand">
             {[
               "Para odontólogos con matrícula vigente en Argentina",
               "Una muestra por matrícula, sujeta a validación",
-              config.plazoEnvio ? `Envío sin cargo · ${config.plazoEnvio}` : "Envío sin cargo",
+              config.plazoEnvio ? `Muestra sin cargo. El envío corre por tu cuenta · ${config.plazoEnvio}` : "Muestra sin cargo. El envío corre por tu cuenta",
               "Requiere presentar tu caso clínico dentro de los 60 días",
               `Hasta el ${fechaLarga(config.cierre)} o hasta agotar stock`,
             ].map((t) => (
-              <li key={t} className="flex gap-3"><CheckIcon className="mt-1 h-4 w-4 shrink-0 text-brand" /> {t}</li>
+              <li key={t} className="flex gap-3"><CheckIcon className="mt-1.5 h-3.5 w-3.5 shrink-0 text-signature" /> {t}</li>
             ))}
           </ul>
-          <div className="flex items-center gap-4 rounded-lg border border-line bg-white p-4">
-            <img src="/img/dm-color.webp" alt="Dental Medrano" width={640} height={171} className="h-8 w-auto" loading="lazy" />
-            <p className="text-[13px] leading-snug text-soft">Programa organizado por <strong className="text-ink">Dental Medrano</strong> · Professional Center, Marcelo T. de Alvear 2063, CABA</p>
+          <div className="flex items-center gap-4 rounded-2xl border border-line-dark p-4">
+            <img src="/img/dm-blanco.webp" alt="Dental Medrano" width={640} height={171} className="h-8 w-auto" loading="lazy" />
+            <p className="text-[14px] leading-snug text-mist">Programa organizado por <strong className="font-medium text-pearl">Dental Medrano</strong> · Professional Center, Marcelo T. de Alvear 2063, CABA</p>
           </div>
         </aside>
 
-        <div ref={cardRef} id="form-card" className="scroll-mt-20 rounded-xl border border-line bg-white p-5 shadow-[0_20px_60px_-30px_rgba(0,0,0,.25)] sm:p-8 md:p-10">
+        <div ref={cardRef} id="form-card" className="scroll-mt-20 rounded-[22px] border border-line-dark bg-onyx-2 p-5 sm:p-8 md:rounded-[28px] md:p-11">
           {cerrado ? (
             <div className="py-10 text-center">
-              <p className="text-3xl font-bold">La inscripción está cerrada.</p>
-              <p className="mt-3 text-soft">Se agotó el stock o terminó el plazo. Gracias por tu interés.</p>
+              <p className="font-display text-[34px]">La inscripción está cerrada.</p>
+              <p className="mt-3 text-mist">Se agotó el stock o terminó el plazo. Gracias por tu interés.</p>
               <WebLink lugar="form-cerrado" className="btn btn-brand mt-8">Ir a dentalmedrano.com <External /></WebLink>
             </div>
           ) : (
             <>
               {paso !== 3 && (
-                <h2 className="mb-4 text-[28px] font-extrabold leading-tight tracking-[-0.02em] lg:hidden">Pedí tu <span className="text-brand">muestra gratis.</span></h2>
+                <h2 className="mb-5 text-[38px] leading-tight lg:hidden">Pedí <em className="italic text-champagne">tu muestra.</em></h2>
               )}
               {paso !== 3 && (
                 <div className="mb-7" aria-label={`Paso ${paso} de 2`}>
-                  <div className="flex items-center justify-between text-[13px] font-bold">
-                    <span className={paso === 1 ? "text-ink" : "text-mute"}>1. Datos profesionales</span>
-                    <span className={paso === 2 ? "text-ink" : "text-mute"}>2. Datos para el envío</span>
+                  <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-[0.2em]">
+                    <span className={paso === 1 ? "text-champagne" : "text-mist"}>1 · Datos profesionales</span>
+                    <span className={paso === 2 ? "text-champagne" : "text-mist"}>2 · Envío</span>
                   </div>
-                  <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-2">
-                    <motion.div className="h-full bg-brand" animate={{ width: paso === 1 ? "50%" : "100%" }} transition={{ duration: 0.5, ease }} />
+                  <div className="mt-3 h-[2px] overflow-hidden rounded-full bg-line-dark">
+                    <motion.div className="h-full bg-signature" animate={{ width: paso === 1 ? "50%" : "100%" }} transition={{ duration: 0.5, ease }} />
                   </div>
                 </div>
               )}
 
               {paso !== 3 && (
-                <div className="mb-6 flex gap-3 rounded-lg border border-brand/30 bg-brand-50 p-4">
-                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand text-[13px] font-extrabold text-white">!</span>
-                  <p className="text-[14px] leading-relaxed text-ink">
-                    <strong>La muestra forma parte de un programa de casos clínicos.</strong> Al recibirla, te comprometés a presentar tu caso en forma privada dentro de los 60 días. Publicarlo es opcional.{" "}
-                    <button type="button" onClick={abrirBases} className="font-bold text-brand underline underline-offset-2">Ver bases</button>
+                <div className="mb-7 flex gap-3 rounded-2xl border border-champagne/35 bg-champagne/[.07] p-4">
+                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-champagne text-[13px] font-medium text-onyx">!</span>
+                  <p className="text-[15px] leading-relaxed text-sand">
+                    <strong className="font-medium text-pearl">La muestra forma parte de un programa de casos clínicos.</strong> Al recibirla, te comprometés a presentar tu caso en forma privada dentro de los 60 días. Publicarlo es opcional.{" "}
+                    <button type="button" onClick={abrirBases} className="text-champagne underline underline-offset-4">Ver bases</button>
                   </p>
                 </div>
               )}
 
-              {alerta && <div role="alert" className="mb-6 rounded-md border border-danger/40 bg-[#fff3f0] px-4 py-3 text-[15px] text-ink">{alerta}</div>}
+              {alerta && <div role="alert" className="mb-6 rounded-xl border border-danger px-4 py-3 text-[15px] text-pearl">{alerta}</div>}
 
               <AnimatePresence mode="wait" initial={false}>
                 {paso === 1 && (
                   <motion.form key="p1" noValidate onSubmit={enviarPaso1} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.25 }}>
                     <fieldset>
-                      <legend className="mb-3 text-[14px] font-bold">Concentración que querés probar <span className="text-brand">*</span></legend>
-                      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4" role="radiogroup">
+                      <legend className="mb-3 text-[15px] font-medium text-pearl">Concentración que querés probar <span className="text-signature">*</span></legend>
+                      <div className={`grid gap-3 ${config.concentraciones.length >= 3 ? "grid-cols-3" : "grid-cols-2"}`} role="radiogroup">
                         {config.concentraciones.map((c, i) => {
                           const on = d.concentracion === c.valor;
                           return (
-                            <label key={c.valor} className={`relative cursor-pointer rounded-md border px-2 py-3.5 text-center transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand ${on ? "border-brand bg-brand-50" : "border-[#cfccc6] hover:border-ink"}`}>
+                            <label key={c.valor} className={`relative cursor-pointer rounded-2xl border px-2 py-4 text-center transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-champagne ${on ? "border-champagne bg-champagne/10" : "border-line-dark hover:border-[#5a534a]"}`}>
                               <input id={`conc-${i}`} type="radio" name="concentracion" value={c.valor} checked={on} onChange={() => { set("concentracion")(c.valor); track("SeleccionConcentracion", { concentracion: c.valor, lugar: "formulario" }, { custom: true, ga: "select_concentracion" }); }} className="sr-only" />
-                              <span className="block text-3xl font-extrabold tracking-tight">{c.numero}<span className="text-lg text-brand">%</span></span>
-                              <span className="mt-1 block text-[10px] font-bold uppercase leading-tight tracking-[0.1em] text-mute">{c.nivel}</span>
-                              {on && <span className="absolute right-2 top-2 grid h-4 w-4 place-items-center rounded-full bg-brand text-white"><CheckIcon className="h-2.5 w-2.5" /></span>}
+                              <span className="block font-display text-[42px] leading-none">{c.numero}<span className="text-[0.5em]">%</span></span>
+                              <span className="mt-1.5 block text-[10px] font-medium uppercase leading-tight tracking-[0.16em] text-mist">{c.nivel}</span>
+                              {on && <span className="absolute right-2 top-2 grid h-4 w-4 place-items-center rounded-full bg-champagne text-onyx"><CheckIcon className="h-2.5 w-2.5" /></span>}
                             </label>
                           );
                         })}
                       </div>
-                      {err.concentracion && <p className="mt-2 text-[13px] font-semibold text-danger">{err.concentracion}</p>}
+                      {err.concentracion && <p className="mt-2 text-[14px] text-danger">{err.concentracion}</p>}
                     </fieldset>
 
                     <div className="mt-6 grid gap-5 sm:grid-cols-2">
@@ -307,11 +308,11 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
 
                     <div className="mt-6">
                       <Casilla id="acepta_datos" checked={Boolean(d.acepta_datos)} onChange={set("acepta_datos")} error={err.acepta_datos}>
-                        Acepto que Dental Medrano use mis datos para gestionar esta solicitud, según la Ley 25.326. <span className="text-brand">*</span>
+                        Acepto que Dental Medrano use mis datos para gestionar esta solicitud, según la Ley 25.326. <span className="text-signature">*</span>
                       </Casilla>
                     </div>
 
-                    <button type="submit" disabled={enviando} aria-busy={enviando} className="btn btn-brand mt-7 w-full !min-h-[58px] !text-base disabled:opacity-60">
+                    <button type="submit" disabled={enviando} aria-busy={enviando} className="btn btn-brand mt-7 w-full !min-h-[58px] disabled:opacity-60">
                       {enviando ? "Guardando…" : <>Continuar <Arrow /></>}
                     </button>
                     <Nota />
@@ -320,9 +321,9 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
 
                 {paso === 2 && (
                   <motion.form key="p2" noValidate onSubmit={enviarPaso2} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.25 }}>
-                    <p className="mb-5 text-[15px] text-soft">
-                      {nombre ? `${nombre}, ` : ""}¿a dónde te enviamos tu muestra de <strong className="text-ink">Densell White {String(d.concentracion)}</strong>?
-                      <span className="mt-1 block text-[13px] text-mute">Envío sin cargo.{config.plazoEnvio ? ` ${config.plazoEnvio}` : ""}</span>
+                    <p className="mb-6 text-[16px] text-sand">
+                      {nombre ? `${nombre}, ` : ""}¿a dónde te enviamos tu muestra de <strong className="font-medium text-pearl">Densell White {String(d.concentracion)}</strong>?
+                      <span className="mt-1.5 block text-[14px] text-mist">El costo del envío corre por tu cuenta; lo coordinamos por WhatsApp.{config.plazoEnvio ? ` ${config.plazoEnvio}` : ""}</span>
                     </p>
                     <div className="grid gap-5 sm:grid-cols-2">
                       <Campo id="domicilio" label="Domicilio de entrega" error={err.domicilio} hint="Calle, número y, si corresponde, piso o consultorio." full>
@@ -339,7 +340,7 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
                       </Campo>
                     </div>
 
-                    <p className="mb-4 mt-7 border-t border-line pt-6 text-[13px] font-extrabold uppercase tracking-[0.14em] text-mute">Sobre tu práctica · un toque por pregunta</p>
+                    <p className="mb-5 mt-8 border-t border-line-dark pt-7 text-[12px] font-medium uppercase tracking-[0.26em] text-champagne">Sobre tu práctica</p>
                     <div className="grid gap-5 sm:grid-cols-2">
                       <Chips id="tipo_matricula" label="Tipo de matrícula" value={String(d.tipo_matricula)} onChange={set("tipo_matricula")} opciones={TIPOS_MATRICULA} error={err.tipo_matricula} />
                       <Chips id="especialidad" label="Especialidad" value={String(d.especialidad)} onChange={set("especialidad")} opciones={ESPECIALIDADES} error={err.especialidad} />
@@ -347,23 +348,23 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
                       <Chips id="blanqueamientos_mes" label="¿Cuántos blanqueamientos ambulatorios hacés por mes?" value={String(d.blanqueamientos_mes)} onChange={set("blanqueamientos_mes")} opciones={VOLUMENES} error={err.blanqueamientos_mes} />
                     </div>
 
-                    <div className="mt-7 grid gap-4 border-t border-line pt-6">
+                    <div className="mt-8 grid gap-4 border-t border-line-dark pt-7">
                       <Casilla id="acepta_bases" checked={Boolean(d.acepta_bases)} onChange={set("acepta_bases")} error={err.acepta_bases}>
                         Acepto las{" "}
-                        <button type="button" onClick={(e) => { e.preventDefault(); abrirBases(); }} className="font-bold text-brand underline underline-offset-2">bases y condiciones</button>{" "}
-                        y me comprometo a presentar mi caso clínico dentro de los 60 días de recibida la muestra. <span className="text-brand">*</span>
+                        <button type="button" onClick={(e) => { e.preventDefault(); abrirBases(); }} className="text-champagne underline underline-offset-4">bases y condiciones</button>{" "}
+                        y me comprometo a presentar mi caso clínico dentro de los 60 días de recibida la muestra. <span className="text-signature">*</span>
                       </Casilla>
                       <Casilla id="acepta_publicacion" checked={Boolean(d.acepta_publicacion)} onChange={set("acepta_publicacion")}>
-                        Autorizo a Dental Medrano a publicar mi caso con mi nombre, siempre que también cuente con el consentimiento del paciente. <span className="text-mute">(opcional)</span>
+                        Autorizo a Dental Medrano a publicar mi caso con mi nombre, siempre que también cuente con el consentimiento del paciente. <span className="text-mist">(opcional)</span>
                       </Casilla>
                       <Casilla id="acepta_novedades" checked={Boolean(d.acepta_novedades)} onChange={set("acepta_novedades")}>
-                        Quiero recibir novedades y promociones de Dental Medrano. <span className="text-mute">(opcional)</span>
+                        Quiero recibir novedades y promociones de Dental Medrano. <span className="text-mist">(opcional)</span>
                       </Casilla>
                     </div>
 
                     <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row">
                       <button type="button" onClick={() => { setPaso(1); setErr({}); setAlerta(""); }} className="btn btn-ghost">Volver</button>
-                      <button type="submit" disabled={enviando} aria-busy={enviando} className="btn btn-brand flex-1 !min-h-[58px] !text-base disabled:opacity-60">
+                      <button type="submit" disabled={enviando} aria-busy={enviando} className="btn btn-brand flex-1 !min-h-[58px] disabled:opacity-60">
                         {enviando ? "Enviando solicitud…" : <>Pedí tu muestra gratis <Arrow /></>}
                       </button>
                     </div>
@@ -375,41 +376,42 @@ export default function Formulario({ onEstado, onSeleccion }: { onEstado: (e: Es
                   <motion.div key="ok" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, ease }} role="status">
                     <div className="text-center">
                       <svg viewBox="0 0 80 80" className="mx-auto h-16 w-16" aria-hidden="true">
-                        <motion.circle cx="40" cy="40" r="36" fill="none" stroke="#f15922" strokeWidth="3" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.7, ease }} />
-                        <motion.path d="M25 41l10 10 20-22" fill="none" stroke="#111" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.4, delay: 0.5 }} />
+                        <motion.circle cx="40" cy="40" r="36" fill="none" stroke="#c8b68e" strokeWidth="3" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.7, ease }} />
+                        <motion.path d="M25 41l10 10 20-22" fill="none" stroke="#f4f0e8" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.4, delay: 0.5 }} />
                       </svg>
-                      <h3 className="mt-5 text-3xl md:text-4xl font-extrabold tracking-tight">Recibimos tu solicitud{listo.nombre ? `, ${listo.nombre}` : ""}.</h3>
+                      <h3 className="mt-5 text-[40px] leading-tight md:text-[46px]">Gracias{listo.nombre ? `, ${listo.nombre}` : ""}.</h3>
+                      <p className="mt-2 text-sand">Recibimos tu solicitud.</p>
                     </div>
-                    <div className="mx-auto mt-6 max-w-[34em] rounded-lg border border-line bg-surface p-5">
-                      <p className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-mute">Resumen</p>
-                      <p className="mt-1 text-lg font-bold">Muestra Densell White {listo.concentracion}</p>
-                      <ul className="mt-3 grid gap-2 text-[15px] text-soft">
-                        <li className="flex gap-2.5"><CheckIcon className="mt-1 h-4 w-4 shrink-0 text-brand" /> Vamos a verificar tu matrícula.</li>
-                        <li className="flex gap-2.5"><CheckIcon className="mt-1 h-4 w-4 shrink-0 text-brand" /> La entrega está sujeta a validación y disponibilidad.</li>
-                        <li className="flex gap-2.5"><CheckIcon className="mt-1 h-4 w-4 shrink-0 text-brand" /> Te contactamos por WhatsApp con los próximos pasos.</li>
+                    <div className="mx-auto mt-6 max-w-[34em] rounded-2xl border border-line-dark p-5">
+                      <p className="eyebrow">Resumen</p>
+                      <p className="mt-2 font-display text-[26px]">Muestra Densell White {listo.concentracion}</p>
+                      <ul className="mt-3 grid gap-2 text-[15px] text-sand">
+                        <li className="flex gap-2.5"><CheckIcon className="mt-1.5 h-3.5 w-3.5 shrink-0 text-signature" /> Vamos a verificar tu matrícula.</li>
+                        <li className="flex gap-2.5"><CheckIcon className="mt-1.5 h-3.5 w-3.5 shrink-0 text-signature" /> La entrega está sujeta a validación y disponibilidad.</li>
+                        <li className="flex gap-2.5"><CheckIcon className="mt-1.5 h-3.5 w-3.5 shrink-0 text-signature" /> Te escribimos por WhatsApp para coordinar el envío, que corre por tu cuenta.</li>
                       </ul>
                     </div>
 
-                    <div className="mt-8 border-t border-line pt-6">
-                      <p className="text-center text-[15px] font-bold">Mientras tanto, conocé toda la línea Densell White</p>
+                    <div className="mt-8 border-t border-line-dark pt-6">
+                      <p className="text-center text-[16px] text-pearl">Mientras tanto, conocé toda la línea Densell White</p>
                       {config.productos.length > 0 && (
-                        <div className="mt-4 grid grid-cols-3 gap-2.5">
+                        <div className={`mt-4 grid gap-2.5 ${config.productos.length >= 3 ? "grid-cols-3" : "grid-cols-2"}`}>
                           {config.productos.slice(0, 3).map((p) => (
-                            <WebLink key={p.nombre} lugar="exito-producto" href={p.link} className="group overflow-hidden rounded-md border border-line bg-white transition-colors hover:border-brand">
+                            <WebLink key={p.nombre} lugar="exito-producto" href={p.link} className="group overflow-hidden rounded-2xl border border-line-dark bg-pearl text-onyx transition-colors hover:border-champagne">
                               <div className="aspect-square overflow-hidden bg-white">
                                 {p.imagen && <img src={p.imagen} alt={p.nombre} className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105" loading="lazy" />}
                               </div>
-                              <p className="px-2.5 py-2 text-[12px] font-bold leading-snug">{p.nombre}</p>
+                              <p className="px-3 py-2.5 text-[13px] font-medium leading-snug">{p.nombre}</p>
                             </WebLink>
                           ))}
                         </div>
                       )}
                       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                         <WebLink lugar="exito" className="btn btn-brand flex-1">Ir a dentalmedrano.com <External /></WebLink>
-                        <a href={waLink(config.whatsapp, config.whatsappTexto)} target="_blank" rel="noopener" className="btn btn-ghost"><WaIcon className="h-5 w-5 text-[#25D366]" /> Consultar</a>
+                        <a href={waLink(config.whatsapp, config.whatsappTexto)} target="_blank" rel="noopener" className="btn btn-ghost"><WaIcon className="h-5 w-5" /> Consultar</a>
                       </div>
                       <p className="mt-6 text-center">
-                        <button type="button" onClick={nuevaSolicitud} className="text-[13px] font-semibold text-mute underline underline-offset-2 hover:text-ink">
+                        <button type="button" onClick={nuevaSolicitud} className="text-[14px] text-mist underline underline-offset-4 hover:text-pearl">
                           Hacer una solicitud para otra matrícula
                         </button>
                       </p>

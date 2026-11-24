@@ -25,37 +25,38 @@ export default function Resultado() {
   const tono = TONOS[idx];
 
   return (
-    <section className="py-20 md:py-28" aria-labelledby="resultado-titulo">
+    <section className="on-light bg-pearl py-24 text-onyx md:py-32" aria-labelledby="resultado-titulo">
       <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-5 md:px-8 lg:grid-cols-[1.05fr_.95fr]">
         <Reveal>
           <p className="eyebrow">Tu caso clínico</p>
-          <h2 id="resultado-titulo" className="mt-4 text-4xl md:text-6xl font-extrabold tracking-[-0.03em] leading-[1.02]">
-            Simple de <span className="text-brand">documentar.</span>
+          <h2 id="resultado-titulo" className="mt-5 text-[46px] leading-[1.02] md:text-[80px]">
+            Simple de <em className="italic text-champagne-ink">documentar.</em>
           </h2>
-          <p className="mt-5 text-[16px] leading-relaxed text-soft">Dentro de los 60 días de recibida la muestra, nos enviás:</p>
+          <hr className="rule mt-6" />
+          <p className="mt-6 text-[17px] leading-relaxed text-ink-soft">Dentro de los 60 días de recibida la muestra, nos enviás:</p>
           <ul className="mt-5 grid gap-3.5">
             {ENVIAR.map((t, i) => (
-              <li key={i} className="flex gap-4 text-[16px] leading-relaxed text-ink">
-                <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand text-xs font-extrabold text-white">{i + 1}</span>
+              <li key={i} className="flex gap-4 text-[17px] leading-relaxed text-onyx">
+                <span className="mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-full border border-champagne-ink font-display text-[15px] text-champagne-ink">{i + 1}</span>
                 {t}
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-[14px] leading-relaxed text-soft">El caso se envía en forma privada. Alcanza con fotos de la sonrisa: no hace falta el nombre ni otros datos que identifiquen al paciente.</p>
+          <p className="mt-5 text-[15px] leading-relaxed text-ink-soft">El caso se envía en forma privada. Alcanza con fotos de la sonrisa: no hace falta el nombre ni otros datos que identifiquen al paciente.</p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border border-line bg-surface p-4">
-              <p className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-ink">Requisito</p>
-              <p className="mt-1.5 text-[14px] leading-relaxed text-soft">Presentar el caso para cumplir con el programa y acceder al 20% OFF.</p>
+            <div className="rounded-2xl border border-line-light bg-pearl-2 p-5">
+              <p className="text-[12px] font-medium uppercase tracking-[0.24em] text-champagne-ink">Requisito</p>
+              <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">Presentar el caso para cumplir con el programa y acceder al 20% OFF.</p>
             </div>
-            <div className="rounded-lg border border-line bg-white p-4">
-              <p className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-ink">Opcional</p>
-              <p className="mt-1.5 text-[14px] leading-relaxed text-soft">Autorizar que Dental Medrano lo publique. Solo con tu permiso y el de tu paciente, cuidando su privacidad.</p>
+            <div className="rounded-2xl border border-line-light p-5">
+              <p className="text-[12px] font-medium uppercase tracking-[0.24em] text-champagne-ink">Opcional</p>
+              <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">Autorizar que Dental Medrano lo publique. Solo con tu permiso y el de tu paciente, cuidando su privacidad.</p>
             </div>
           </div>
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="rounded-2xl bg-ink px-5 py-8 sm:px-8">
+          <div className="rounded-[28px] bg-onyx px-5 py-9 text-pearl sm:px-8">
             <div className="relative mx-auto aspect-square w-full max-w-[260px] md:max-w-[320px]">
               <motion.div animate={{ backgroundColor: tono.c }} transition={{ duration: 0.4 }} className="absolute inset-[8%] rounded-full opacity-25 blur-3xl" />
               <motion.div
@@ -65,28 +66,28 @@ export default function Resultado() {
               />
               <div className="absolute inset-0 grid place-items-center">
                 <AnimatePresence mode="wait">
-                  <motion.p key={tono.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="text-5xl md:text-6xl font-extrabold tracking-tight text-black/80">
+                  <motion.p key={tono.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="font-display text-6xl font-medium text-black/75 md:text-7xl">
                     {tono.id}
                   </motion.p>
                 </AnimatePresence>
               </div>
             </div>
-            <p className="mt-4 text-center text-[13px] font-semibold text-white/70">Tocá una tonalidad</p>
+            <p className="mt-4 text-center text-[11px] font-medium uppercase tracking-[0.24em] text-mist">Tocá una tonalidad</p>
             <div className="mx-auto mt-3 flex max-w-[420px] justify-between gap-2" role="radiogroup" aria-label="Guía de color">
               {TONOS.map((t, i) => {
                 const on = i === idx;
                 return (
                   <button key={t.id} type="button" role="radio" aria-checked={on} onClick={() => setIdx(i)} className="group flex min-h-[44px] flex-1 flex-col items-center gap-2">
                     <span
-                      className={`block h-11 w-full rounded-t-full rounded-b-md transition-transform duration-200 md:h-12 ${on ? "-translate-y-1.5 ring-2 ring-brand ring-offset-2 ring-offset-ink" : "group-hover:-translate-y-1"}`}
+                      className={`block h-11 w-full rounded-t-full rounded-b-md transition-transform duration-200 md:h-12 ${on ? "-translate-y-1.5 ring-2 ring-champagne ring-offset-2 ring-offset-onyx" : "group-hover:-translate-y-1"}`}
                       style={{ backgroundColor: t.c }}
                     />
-                    <span className={`text-[11px] font-bold ${on ? "text-white" : "text-white/60"}`}>{t.id}</span>
+                    <span className={`text-[12px] font-medium ${on ? "text-pearl" : "text-mist"}`}>{t.id}</span>
                   </button>
                 );
               })}
             </div>
-            <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-white/60">
+            <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[13px] text-mist">
               <Check className="h-3 w-3" /> Guía ilustrativa. Los resultados dependen de cada paciente y protocolo.
             </p>
           </div>
