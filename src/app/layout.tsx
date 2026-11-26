@@ -8,6 +8,7 @@ import "@fontsource/jost/latin-300.css";
 import "@fontsource/jost/latin-400.css";
 import "@fontsource/jost/latin-500.css";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Muestra gratis de Densell White para odontólogos | Dental Medrano",
@@ -27,7 +28,7 @@ export const viewport: Viewport = { themeColor: "#121110", width: "device-width"
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es-AR">
-      <body>{children}</body>
+      <body>{children}<Analytics /></body>
     </html>
   );
 }
