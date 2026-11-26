@@ -1,4 +1,5 @@
 import "server-only";
+import { db } from "@/lib/supabase";
 
 // Aviso por mail de cada solicitud confirmada (opcional).
 // Usa Resend (plan gratis: 3.000 mails por mes). Se activa con estas variables en Vercel:
@@ -11,6 +12,40 @@ type Datos = Record<string, string | boolean | null | undefined>;
 const esc = (v: unknown) => String(v ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] as string);
 
 export async function avisarNuevaSolicitud(d: Datos, origenUrl: string) {
+  await Promise.allSettled([avisoPush(d, origenUrl), avisoMail(d, origenUrl)]);
+}
+
+// Aviso al celular con ntfy (gratis, sin cuenta). Canal privado: variable NTFY_TOPIC en Vercel o pp_config key 'avisos' → { ntfyTopic }.
+// En el celular: app ntfy → Suscribirse → ese mismo nombre.
+async function avisoPush(d: Datos, origenUrl: string) {
+  let topic = process.env.NTFY_TOPIC || "";
+  if (!topic) {
+    // Si no está en Vercel, lo toma de la fila privada "avisos" de pp_config (nunca se manda al navegador).
+    const { data } = await db().from("pp_config").select("value").eq("key", "avisos").maybeSingle();
+    topic = String((data?.value as { ntfyTopic?: string } | null)?.ntfyTopic || "");
+  }
+  if (!topic) return;
+  let admin = "";
+  try { admin = new URL("/ADMIN", origenUrl).toString(); } catch {}
+  const entrega = d.entrega === "envio" ? `Envío a ${d.localidad ?? ""}, ${d.provincia ?? ""}` : "Retira en el local";
+  try {
+    await fetch("https://ntfy.sh/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        topic,
+        title: `Nueva solicitud · ${d.concentracion ?? ""}`,
+        message: `${d.nombre ?? ""} (mat. ${d.matricula ?? ""})\n${entrega}\nWhatsApp: ${d.whatsapp ?? ""}`,
+        tags: ["tooth"],
+        priority: 4,
+        ...(admin ? { click: admin } : {}),
+      }),
+      signal: AbortSignal.timeout(5000),
+    });
+  } catch {}
+}
+
+async function avisoMail(d: Datos, origenUrl: string) {
   const key = process.env.RESEND_API_KEY;
   const para = (process.env.NOTIFY_EMAIL || "").split(",").map((s) => s.trim()).filter(Boolean);
   if (!key || !para.length) return;

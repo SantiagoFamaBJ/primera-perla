@@ -39,6 +39,7 @@ function Inscripciones() {
   const [filtro, setFiltro] = useState("todas");
   const [busca, setBusca] = useState("");
   const [abierta, setAbierta] = useState<string | null>(null);
+  const [marcadas, setMarcadas] = useState<string[]>([]);
 
   const cargar = useCallback(async () => {
     setCargando(true);
@@ -53,6 +54,19 @@ function Inscripciones() {
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...cambios } : r)));
     await fetch("/api/admin/inscripciones", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, ...cambios }) });
   };
+
+  const borrar = async (ids: string[]) => {
+    if (!ids.length) return;
+    const nombres = rows.filter((r) => ids.includes(r.id)).map((r) => r.nombre || "(sin nombre)");
+    const txt = ids.length === 1 ? `¿Borrar el registro de ${nombres[0]}?` : `¿Borrar ${ids.length} registros?`;
+    if (!window.confirm(`${txt}\n\nSe elimina definitivamente y libera su lugar en el stock.`)) return;
+    const r = await fetch("/api/admin/inscripciones", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ids }) });
+    if (!r.ok) { window.alert("No se pudo borrar. Probá de nuevo."); return; }
+    setRows((rs) => rs.filter((x) => !ids.includes(x.id)));
+    setMarcadas((m) => m.filter((x) => !ids.includes(x)));
+    setAbierta(null);
+  };
+  const marcar = (id: string) => setMarcadas((m) => (m.includes(id) ? m.filter((x) => x !== id) : [...m, id]));
 
   const conteo = useMemo(() => {
     const c: Record<string, number> = {};
@@ -104,6 +118,7 @@ function Inscripciones() {
         </select>
         <input className={inputCls} placeholder="Buscar por nombre, matrícula, email, WhatsApp o localidad" value={busca} onChange={(e) => setBusca(e.target.value)} />
         <div className="flex gap-2">
+          {marcadas.length > 0 && <button className="rounded-full border border-red-600 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-600 hover:text-white" onClick={() => borrar(marcadas)}>Borrar {marcadas.length}</button>}
           <button className={btn2Cls} onClick={cargar}>Actualizar</button>
           <a className={btnCls} href="/api/admin/export">Descargar Excel</a>
         </div>
@@ -113,14 +128,15 @@ function Inscripciones() {
       <div className="mt-4 overflow-x-auto rounded-lg bg-white">
         <table className="w-full min-w-[860px] text-left text-sm">
           <thead className="border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-500">
-            <tr><th className="p-3">Fecha</th><th className="p-3">Nombre</th><th className="p-3">Matrícula</th><th className="p-3">Conc.</th><th className="p-3">WhatsApp</th><th className="p-3">Provincia / Localidad</th><th className="p-3">Estado</th><th className="p-3" /></tr>
+            <tr><th className="p-3 w-8"><input type="checkbox" aria-label="Marcar todas" checked={visibles.length > 0 && visibles.every((r) => marcadas.includes(r.id))} onChange={(e) => setMarcadas(e.target.checked ? visibles.map((r) => r.id) : [])} /></th><th className="p-3">Fecha</th><th className="p-3">Nombre</th><th className="p-3">Matrícula</th><th className="p-3">Conc.</th><th className="p-3">WhatsApp</th><th className="p-3">Provincia / Localidad</th><th className="p-3">Estado</th><th className="p-3" /></tr>
           </thead>
           <tbody>
-            {cargando && <tr><td colSpan={8} className="p-6 text-center text-neutral-500">Cargando…</td></tr>}
-            {!cargando && !visibles.length && <tr><td colSpan={8} className="p-6 text-center text-neutral-500">No hay inscripciones.</td></tr>}
+            {cargando && <tr><td colSpan={9} className="p-6 text-center text-neutral-500">Cargando…</td></tr>}
+            {!cargando && !visibles.length && <tr><td colSpan={9} className="p-6 text-center text-neutral-500">No hay inscripciones.</td></tr>}
             {visibles.map((r) => (
               <Fragment key={r.id}>
                 <tr className="border-b border-neutral-100 hover:bg-neutral-50">
+                  <td className="p-3"><input type="checkbox" aria-label={`Marcar ${r.nombre}`} checked={marcadas.includes(r.id)} onChange={() => marcar(r.id)} /></td>
                   <td className="p-3 whitespace-nowrap">{fmt(r.created_at)}</td>
                   <td className="p-3 font-semibold">{r.nombre}</td>
                   <td className="p-3">{r.matricula} <span className="text-neutral-400">{r.tipo_matricula ? `· ${String(r.tipo_matricula).match(/\((\w+)\)/)?.[1] ?? ""}` : ""}</span></td>
@@ -136,7 +152,7 @@ function Inscripciones() {
                 </tr>
                 {abierta === r.id && (
                   <tr className="bg-neutral-50">
-                    <td colSpan={8} className="p-4">
+                    <td colSpan={9} className="p-4">
                       <div className="grid gap-x-8 gap-y-1.5 text-sm md:grid-cols-3">
                         {[["Email", r.email], ["Entrega", r.entrega === "envio" ? "Envío (a su cargo)" : r.entrega === "retiro" ? "Retiro en local" : "—"], ["Domicilio", r.domicilio], ["CP", r.codigo_postal], ["Localidad", r.localidad], ["Especialidad", r.especialidad], ["Marca actual", r.marca_actual], ["Blanq./mes", r.blanqueamientos_mes], ["Autoriza publicar", r.acepta_publicacion ? "Sí" : "No"], ["Novedades", r.acepta_novedades ? "Sí" : "No"], ["Origen", [r.utm_source, r.utm_campaign, r.utm_content].filter(Boolean).join(" / ") || "—"], ["Anuncio (ad_id)", r.ad_id]].map(([k, v]) => (
                           <p key={String(k)}><span className="text-neutral-500">{k}:</span> {String(v ?? "—") || "—"}</p>
@@ -151,6 +167,7 @@ function Inscripciones() {
                       </div>
                       <label className="mt-3 block text-xs font-bold uppercase tracking-wider text-neutral-500">Notas internas</label>
                       <textarea className={`${inputCls} mt-1`} rows={2} defaultValue={String(r.notas ?? "")} onBlur={(e) => cambiar(r.id, { notas: e.target.value })} />
+                      <button className="mt-4 text-sm font-semibold text-red-600 underline" onClick={() => borrar([r.id])}>Borrar este registro</button>
                     </td>
                   </tr>
                 )}

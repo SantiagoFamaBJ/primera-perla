@@ -68,7 +68,7 @@ export const DEFAULTS: Config = {
     { pregunta: "¿Dos jeringas alcanzan para un tratamiento completo?", respuesta: "No necesariamente. Son 2 jeringas de 2 ml para que conozcas el producto; según el caso y el protocolo, pueden no alcanzar para completar un tratamiento." },
     { pregunta: "¿Qué tengo que enviar como caso clínico?", respuesta: "Una foto inicial y una final con guía de color, con iluminación y encuadre comparables; datos breves de la concentración usada, la duración y tus observaciones; y la confirmación de que tenés el consentimiento de tu paciente. Lo enviás dentro de los 60 días de recibida la muestra." },
     { pregunta: "¿Van a publicar mi caso?", respuesta: "Solo si nos autorizás. La autorización es opcional y separada del programa, y cualquier publicación requiere también el consentimiento de tu paciente, cuidando su privacidad." },
-    { pregunta: "¿Cómo recibo y uso el 20% OFF?", respuesta: "Cuando recibimos y revisamos tu caso, te enviamos un cupón por WhatsApp. Vale por 30 días corridos desde que te lo entregamos, para compras de productos Densell White en Dental Medrano." },
+    { pregunta: "¿Cómo recibo y uso el 20% OFF?", respuesta: "Cuando recibimos y revisamos tu caso, te enviamos un cupón por WhatsApp. Vale por 7 días corridos desde que te lo entregamos, para compras de productos Densell White en Dental Medrano." },
     { pregunta: "¿Puedo pedir más de una concentración?", respuesta: "No. Hay una solicitud por matrícula: 2 jeringas de la concentración que elijas." },
   ],
   razonSocial: "",

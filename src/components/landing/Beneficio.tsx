@@ -20,7 +20,7 @@ export default function Beneficio() {
               Presentá tu caso clínico y te damos un 20% de descuento en tu próxima compra de Densell White.
             </p>
             <p className="text-[16px] leading-relaxed text-mist">
-              Cuando recibimos y revisamos tu caso, te enviamos un cupón por WhatsApp. Vale por 30 días corridos desde que te lo entregamos. No se entrega al completar el formulario.
+              Cuando recibimos y revisamos tu caso, te enviamos un cupón por WhatsApp. Vale por 7 días corridos desde que te lo entregamos. No se entrega al completar el formulario.
             </p>
           </Reveal>
         </div>
